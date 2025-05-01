@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter var", "sans-serif"],
+        sans: ["Poppins", "sans-serif"],
         display: ["Poppins", "sans-serif"],
       },
       colors: {

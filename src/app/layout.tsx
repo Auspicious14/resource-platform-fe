@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Poppins, Inter } from "next/font/google";
 
-const interSans = Inter({
-  variable: "--font-inter-sans",
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const poppins = Poppins({
   subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -19,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${interSans.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <div className="min-h-screen bg-blue-50">
           <header className="bg-blue-900 text-white p-6">
             <h1 className="text-2xl font-bold font-sans">DevResourceHub</h1>
