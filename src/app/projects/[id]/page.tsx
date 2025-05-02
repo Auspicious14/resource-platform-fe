@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { projects } from "@/modules/projects/data";
 
-export default function ProjectPage({ params }: { params: { id: string } }) {
+export default function ProjectPage({ params }: { params: any }) {
   const project = projects.find((p) => p.id === params.id);
 
   if (!project) return notFound();
