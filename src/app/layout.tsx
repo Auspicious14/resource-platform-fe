@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Poppins, Inter } from "next/font/google";
 import Link from "next/link";
+import { AppContextProvider } from "@/context";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -42,7 +43,7 @@ export default function RootLayout({
               </div>
             </nav>
           </header>
-          <main className="container mx-auto p-4">{children}</main>
+          <AppContextProvider>{children}</AppContextProvider>
         </div>
         <footer className="bg-blue-900 text-white py-8 mt-20">
           <div className="max-w-6xl mx-auto px-4 text-center">
