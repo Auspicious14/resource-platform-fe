@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { projects } from "@/modules/projects/data";
 
-export default function ProjectPage({ params }: { params: any }) {
-  const project = projects.find((p) => p.id === params.id);
+export default async function ProjectPage({ params }: { params: any }) {
+
+  const param = await params;
+  const project = projects.find((p) => p.id === param.id);
 
   if (!project) return notFound();
 

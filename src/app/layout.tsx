@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Poppins, Inter } from "next/font/google";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -23,8 +24,23 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         <div className="min-h-screen bg-blue-50">
-          <header className="bg-blue-900 text-white p-6">
-            <h1 className="text-2xl font-bold font-sans">DevResourceHub</h1>
+          <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
+            <nav className="container mx-auto flex justify-between items-center px-4 py-4">
+              <Link
+                href="/"
+                className="text-2xl font-bold font-sans hover:text-blue-200 transition-colors duration-200 flex items-center"
+              >
+                DevResourceHub
+              </Link>
+              <div className="space-x-6">
+                <Link
+                  href="/projects"
+                  className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+                >
+                  Projects
+                </Link>
+              </div>
+            </nav>
           </header>
           <main className="container mx-auto p-4">{children}</main>
         </div>
@@ -32,13 +48,22 @@ export default function RootLayout({
           <div className="max-w-6xl mx-auto px-4 text-center">
             <p className="mb-4">© 2024 DevResourceHub. All rights reserved.</p>
             <div className="flex justify-center space-x-6">
-              <a href="#" className="hover:text-blue-200 transition-colors">
+              <a
+                href="#"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
                 Terms
               </a>
-              <a href="#" className="hover:text-blue-200 transition-colors">
+              <a
+                href="#"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
                 Privacy
               </a>
-              <a href="#" className="hover:text-blue-200 transition-colors">
+              <a
+                href="#"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
                 Contact
               </a>
             </div>
