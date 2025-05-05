@@ -1,6 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Master Software Development Through Projects
 
-## Getting Started
+Learn by building real-world projects with guided resources, curated learning paths, and community support.
+
+## Features
+
+- Project-based learning approach
+- Guided resources for all skill levels
+- Curated learning paths
+- Community discussion support
+
+## Learning Paths
+
+1. **Frontend Development**  
+   HTML/CSS → JavaScript → React → Advanced Patterns
+2. **Backend Development**  
+   Node.js → Databases → API Design → Security
+3. **Full-Stack Specialization**  
+   Architecture → DevOps → Performance Optimization
+
+## Development
+
+### Getting Started
 
 First, run the development server:
 
