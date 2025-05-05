@@ -1,11 +1,11 @@
 export interface IProject {
   id: string;
   title: string;
-  difficulty: "beginner" | "intermediate" | "advanced";
+  difficulty: string | "beginner" | "intermediate" | "advanced";
   description: string;
   requirements?: string[];
   resources: Array<{
-    type: "video" | "article" | "course";
+    type: string | "video" | "article" | "course";
     url: string;
     title: string;
   }>;
