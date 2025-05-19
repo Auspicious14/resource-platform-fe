@@ -45,7 +45,7 @@ export const AuthContextProvider = ({
       if (response?.data) {
         setUser(response.data);
         toast.success("Success!");
-        router.push(type === "signup" ? "/signin" : `/chat`);
+        router.push(type === "signup" ? "/signin" : `/`);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "An error occurred");

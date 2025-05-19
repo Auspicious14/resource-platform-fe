@@ -1,53 +1,12 @@
+"use client";
 import React from "react";
 import { IProject } from "../projects/model";
+import { Button } from "@/components";
+import { useRouter } from "next/navigation";
+import { projects } from "../projects/data";
 
 export const HomePage = () => {
-  // Added realistic projects
-  const projects: IProject[] = [
-    {
-      id: "1",
-      title: "Landing Page Template",
-      difficulty: "beginner",
-      description:
-        "Build a responsive landing page with modern design principles",
-      resources: [
-        {
-          type: "video",
-          url: "#",
-          title: "HTML & CSS Crash Course",
-        },
-      ],
-    },
-    {
-      id: "2",
-      title: "E-Commerce Dashboard",
-      difficulty: "intermediate",
-      description: "Create a dynamic admin dashboard with React and Chart.js",
-      resources: [
-        {
-          type: "article",
-          url: "#",
-          title: "React State Management Guide",
-        },
-      ],
-    },
-    {
-      id: "3",
-      title: "Fullstack Auth System",
-      difficulty: "advanced",
-      description: "Implement JWT authentication with Node.js and Redis",
-      resources: [
-        {
-          type: "course",
-          url: "#",
-          title: "Advanced Backend Security",
-        },
-      ],
-    },
-  ];
-
-  // Updated features section with proper icons
-  // Added testimonials section
+  const router = useRouter();
 
   return (
     <>
@@ -153,13 +112,12 @@ export const HomePage = () => {
             </div>
           </div>
 
-          {/* Existing projects section */}
           <div className="py-8" id="projects">
             <h2 className="text-3xl font-bold text-blue-900 mb-8">
               Featured Projects
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
+              {projects?.slice(0, 4).map((project) => (
                 <div
                   key={project.id}
                   className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
@@ -202,6 +160,22 @@ export const HomePage = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+        <div className="bg-yellow-50 py-12">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-yellow-900 mb-4">
+              Want to contribute to the platform?
+            </h2>
+            <p className="text-lg text-yellow-800 mb-6">
+              Add your own project ideas and help others learn by building!
+            </p>
+            <Button
+              onClick={() => router.push("/projects/create")}
+              // className="inline-block bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors shadow-md"
+            >
+              Add a Project
+            </Button>
           </div>
         </div>
         <div className="bg-blue-50 py-16">
