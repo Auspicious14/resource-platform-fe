@@ -6,18 +6,42 @@ import React from "react";
 import { useAuth } from "../../auth/context";
 import { useProjectState } from "../context";
 
-const deficultyOptions = [
-  { label: "easy", value: "easy" },
-  { label: "medium", value: "medium" },
-  { label: "hard", value: "hard" },
+const difficultyOptions = [
+  { label: "Beginner", value: "beginner" },
+  { label: "Intermediate", value: "intermediate" },
+  { label: "Advanced", value: "advanced" },
+];
+
+const resourceTypeOptions = [
+  { label: "Video", value: "video" },
+  { label: "Article", value: "article" },
+  { label: "Course", value: "course" },
 ];
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required("Project name is required"),
+  title: Yup.string().required("Project title is required"),
+  difficulty: Yup.object({
+    label: Yup.string().required(),
+    value: Yup.string()
+      .oneOf(["beginner", "intermediate", "advanced"])
+      .required("Difficulty is required"),
+  }).required(),
   description: Yup.string().required("Description is required"),
   requirements: Yup.array()
     .of(Yup.string().required("Requirement can't be empty"))
     .min(1, "At least one requirement is required"),
+  resources: Yup.array().of(
+    Yup.object().shape({
+      type: Yup.object({
+        label: Yup.string().required(),
+        value: Yup.string()
+          .oneOf(["video", "article", "course"])
+          .required("Type is required"),
+      }).required(),
+      url: Yup.string().url("Invalid URL").required("Resource URL is required"),
+      title: Yup.string().required("Resource title is required"),
+    })
+  ),
 });
 
 export default function CreateProjectPage() {
@@ -37,8 +61,8 @@ export default function CreateProjectPage() {
   const { createProject, updateProject, isLoading } = useProjectState();
 
   return (
-    <div className=" bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-md">
+    <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 min-h-screen">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-2xl">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
           Create New Project
         </h1>
@@ -46,12 +70,20 @@ export default function CreateProjectPage() {
           initialValues={{
             title: "",
             description: "",
-            difficulty: { label: "easy", value: "easy" },
+            difficulty: difficultyOptions[0],
             requirements: [""],
+            resources: [],
           }}
           validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            createProject({ ...values, difficulty: values.difficulty.value });
+            createProject({
+              ...values,
+              difficulty: values.difficulty.value,
+              resources: values.resources.map((r: any) => ({
+                ...r,
+                type: r.type.value,
+              })),
+            });
           }}
         >
           {({
@@ -60,51 +92,55 @@ export default function CreateProjectPage() {
             values,
             setFieldValue,
             isSubmitting,
+            errors,
+            touched,
           }) => (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <TextInput
-                label="Project Name"
-                name="name"
+                label="Project Title"
+                name="title"
                 onChange={handleChange}
-                placeholder="Enter project name"
+                value={values.title}
+                placeholder="Enter project title"
               />
               <TextInput
                 label="Description"
                 name="description"
                 type="textarea"
                 onChange={handleChange}
+                value={values.description}
                 placeholder="Enter project description"
               />
               <SelectInput
                 label="Difficulty"
-                options={deficultyOptions}
-                onChange={(e) => setFieldValue("difficulty", e.target.value)}
+                name="difficulty"
+                options={difficultyOptions}
+                value={values.difficulty.value}
+                onChange={(option) => setFieldValue("difficulty", option)}
               />
               <FieldArray name="requirements">
                 {({ push, remove }) => (
                   <div className="w-full">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                      Requirements
+                    </label>
                     {values.requirements.map((_, index) => (
                       <div
                         key={index}
-                        className="flex gap-2 items-start w-full"
+                        className="flex gap-2 items-start w-full mb-2"
                       >
                         <TextInput
-                          label={
-                            index === 0
-                              ? "Requirements"
-                              : `Requirement ${index + 1}`
-                          }
                           name={`requirements.${index}`}
                           onChange={handleChange}
                           value={values.requirements[index]}
                           placeholder="Enter project requirement"
-                          // className="flex-1"
+                          label={""}
                         />
                         {index > 0 && (
                           <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="mt-6 p-2 text-red-500 hover:text-red-700"
+                            className="mt-2 p-2 text-red-500 hover:text-red-700"
                           >
                             <TrashIcon />
                           </button>
@@ -122,7 +158,66 @@ export default function CreateProjectPage() {
                   </div>
                 )}
               </FieldArray>
-              ;
+              <FieldArray name="resources">
+                {({ push, remove }) => (
+                  <div className="w-full">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                      Resources
+                    </label>
+                    {values.resources.map((resource: any, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col md:flex-row gap-2 items-start w-full mb-2"
+                      >
+                        <SelectInput
+                          name={`resources.${index}.type`}
+                          label="Type"
+                          options={resourceTypeOptions}
+                          value={resource.type}
+                          onChange={(option) =>
+                            setFieldValue(`resources.${index}.type`, option)
+                          }
+                        />
+                        <TextInput
+                          name={`resources.${index}.title`}
+                          label="Title"
+                          onChange={handleChange}
+                          value={resource.title}
+                          placeholder="Resource title"
+                        />
+                        <TextInput
+                          name={`resources.${index}.url`}
+                          label="URL"
+                          onChange={handleChange}
+                          value={resource.url}
+                          placeholder="Resource URL"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="mt-6 p-2 text-red-500 hover:text-red-700"
+                        >
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        push({
+                          type: resourceTypeOptions[0],
+                          url: "",
+                          title: "",
+                        })
+                      }
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      <PlusIcon />
+                      Add Resource
+                    </button>
+                  </div>
+                )}
+              </FieldArray>
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
