@@ -1,10 +1,25 @@
 import { notFound } from "next/navigation";
 import { projects } from "@/modules/projects/data";
+import { GetServerSideProps } from "next";
+import React from "react";
 
-export default async function ProjectPage({ params }: { params: any }) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req, params } = context;
+  const token = req.cookies?.token;
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: false,
+      },
+    };
+  }
+  // Pass params as props for the page
+  return { props: { id: params?.id } };
+};
 
-  const param = await params;
-  const project = projects.find((p) => p.id === param.id);
+export default function ProjectPage({ id }: { id: string }) {
+  const project = projects.find((p) => p.id === id);
 
   if (!project) return notFound();
 
@@ -43,7 +58,7 @@ export default async function ProjectPage({ params }: { params: any }) {
               Learning Objectives
             </h2>
             <ul className="list-disc list-inside space-y-2">
-              {project.requirements.map((req) => (
+              {project.requirements.map((req: string) => (
                 <li key={req} className="text-gray-600">
                   {req}
                 </li>
@@ -57,21 +72,23 @@ export default async function ProjectPage({ params }: { params: any }) {
             Recommended Resources
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {project.resources.map((resource) => (
-              <a
+            {project.resources.map((resource: any) => (
+              <div
                 key={resource.title}
-                href={resource.url}
-                className="p-4 border rounded-lg hover:shadow-md transition-shadow"
+                className="bg-blue-50 rounded-lg p-4 shadow-sm"
               >
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded-md text-sm bg-blue-100 text-blue-800">
-                    {resource.type}
-                  </span>
-                  <span className="text-blue-600 hover:underline">
-                    {resource.title}
-                  </span>
-                </div>
-              </a>
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-700 font-semibold hover:underline"
+                >
+                  {resource.title}
+                </a>
+                <p className="text-gray-600 text-sm mt-2">
+                  {resource.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
