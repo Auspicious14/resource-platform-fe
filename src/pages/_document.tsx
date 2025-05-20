@@ -14,16 +14,16 @@ export default function Document() {
         http-equiv="Content-Security-Policy"
         content="upgrade-insecure-requests"
       /> */}
-      <link rel="icon" href="/images/vendify logo white.jpg" />
+      <link rel="icon" href="/favicon.ico" />
       <link
         rel="preconnect"
         href="https://fonts.gstatic.com"
         crossOrigin={""}
       />
-      {/* <link
-        href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap"
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap"
         rel="stylesheet"
-      /> */}
+      />
       <body>
         <Main />
         <NextScript />
