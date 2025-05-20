@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { IProject } from "./model";
 import { AxiosClient } from "@/components";
+import { useRouter } from "next/navigation";
 
 interface IProjectState {
   project: IProject | null;
@@ -41,6 +42,7 @@ interface IProps {
 }
 
 export const ProjectConextProvider = ({ children }: IProps) => {
+  const router = useRouter();
   const [projects, setProjects] = useState<any[]>([]);
   const [project, setProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +56,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       if (data) {
         setProjects((prev) => [...prev, response.data]);
         toast.success("Project created successfully");
+        router.push("/projects");
         return data;
       }
     } catch (err: any) {

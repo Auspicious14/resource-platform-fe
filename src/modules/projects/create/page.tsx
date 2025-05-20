@@ -3,7 +3,6 @@ import { Formik, FieldArray } from "formik";
 import { Button, SelectInput, TextInput } from "../../../components";
 import * as Yup from "yup";
 import React from "react";
-import { useAuth } from "../../auth/context";
 import { useProjectState } from "../context";
 
 const difficultyOptions = [
@@ -45,19 +44,6 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function CreateProjectPage() {
-  // const {} = useAuth();
-  // if (!isAuthenticated) {
-  //   return (
-  //     <div className="max-w-2xl mx-auto py-16 px-4 text-center">
-  //       <h2 className="text-2xl font-bold text-blue-900 mb-4">
-  //         Please log in to create a project.
-  //       </h2>
-  //       <a href="/login" className="text-blue-600 hover:underline">
-  //         Go to Login
-  //       </a>
-  //     </div>
-  //   );
-  // }
   const { createProject, updateProject, isLoading } = useProjectState();
 
   return (
@@ -76,10 +62,8 @@ export default function CreateProjectPage() {
           }}
           // validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            console.log({ values });
             createProject({
               ...values,
-              difficulty: values.difficulty.value,
               resources: values.resources.map((r: any) => ({
                 ...r,
                 type: r.type.value,

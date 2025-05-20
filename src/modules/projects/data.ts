@@ -1,6 +1,6 @@
 export const projects = [
   {
-    id: "1",
+    _id: "1",
     title: "Landing Page Template",
     difficulty: "beginner",
     description:
@@ -8,7 +8,7 @@ export const projects = [
     resources: [{ type: "video", url: "#", title: "HTML & CSS Crash Course" }],
   },
   {
-    id: "2",
+    _id: "2",
     title: "E-Commerce Dashboard",
     difficulty: "intermediate",
     description: "Create dynamic admin dashboard with React and Chart.js",
@@ -17,7 +17,7 @@ export const projects = [
     ],
   },
   {
-    id: "3",
+    _id: "3",
     title: "E-Commerce REST API",
     difficulty: "intermediate",
     description:
@@ -26,14 +26,14 @@ export const projects = [
     resources: [{ type: "course", url: "#", title: "Node.js Fundamentals" }],
   },
   {
-    id: "4",
+    _id: "4",
     title: "Social Media Dashboard",
     difficulty: "advanced",
     description: "Build real-time dashboard with React, GraphQL and WebSockets",
     resources: [{ type: "video", url: "#", title: "GraphQL Subscriptions" }],
   },
   {
-    id: "5",
+    _id: "5",
     title: "Portfolio Website",
     difficulty: "beginner",
     description: "Create a personal portfolio with Next.js and Tailwind CSS",
@@ -42,7 +42,7 @@ export const projects = [
     ],
   },
   {
-    id: "6",
+    _id: "6",
     title: "React Todo App with Firebase",
     difficulty: "intermediate",
     description: "Create a collaborative todo application with real-time sync",
@@ -51,7 +51,7 @@ export const projects = [
     ],
   },
   {
-    id: "7",
+    _id: "7",
     title: "Authentication System",
     difficulty: "advanced",
     description: "Implement OAuth 2.0 flow with Node.js and Passport.js",
@@ -61,7 +61,7 @@ export const projects = [
     ],
   },
   {
-    id: "8",
+    _id: "8",
     title: "Mobile Recipe App",
     difficulty: "intermediate",
     description: "Build cross-platform recipe manager with React Native",
@@ -70,7 +70,7 @@ export const projects = [
     ],
   },
   {
-    id: "9",
+    _id: "9",
     title: "CMS Platform",
     difficulty: "advanced",
     description: "Headless CMS with Next.js and Sanity.io",
@@ -79,7 +79,7 @@ export const projects = [
     ],
   },
   {
-    id: "10",
+    _id: "10",
     title: "AI Chat Interface",
     difficulty: "advanced",
     description: "Build GPT-4 chatbot with streaming responses",
@@ -88,14 +88,14 @@ export const projects = [
     ],
   },
   {
-    id: "11",
+    _id: "11",
     title: "Real-time Chat Application",
     difficulty: "intermediate",
     description: "Build chat app with Socket.io and React",
     resources: [{ type: "video", url: "#", title: "WebSocket Fundamentals" }],
   },
   {
-    id: "12",
+    _id: "12",
     title: "Serverless API Gateway",
     difficulty: "advanced",
     description: "Create REST API using AWS Lambda & API Gateway",
@@ -105,7 +105,7 @@ export const projects = [
     ],
   },
   {
-    id: "13",
+    _id: "13",
     title: "E-commerce Product Search",
     difficulty: "advanced",
     description: "Implement search functionality with Algolia",
@@ -114,28 +114,28 @@ export const projects = [
     ],
   },
   {
-    id: "14",
+    _id: "14",
     title: "Mobile Payment Integration",
     difficulty: "advanced",
     description: "Add Stripe payments to React Native app",
     resources: [{ type: "video", url: "#", title: "Mobile Payment Systems" }],
   },
   {
-    id: "15",
+    _id: "15",
     title: "Data Visualization Dashboard",
     difficulty: "intermediate",
     description: "Create analytics dashboard with D3.js",
     resources: [{ type: "article", url: "#", title: "D3.js Essentials" }],
   },
   {
-    id: "16",
+    _id: "16",
     title: "CMS Backend System",
     difficulty: "intermediate",
     description: "Build headless CMS with Strapi and PostgreSQL",
     resources: [{ type: "course", url: "#", title: "Content Modeling Basics" }],
   },
   {
-    id: "17",
+    _id: "17",
     title: "CI/CD Pipeline Setup",
     difficulty: "advanced",
     description: "Automate deployments with GitHub Actions",
@@ -143,14 +143,14 @@ export const projects = [
     resources: [{ type: "article", url: "#", title: "DevOps Best Practices" }],
   },
   {
-    id: "18",
+    _id: "18",
     title: "AI Image Recognition",
     difficulty: "advanced",
     description: "Implement vision model with TensorFlow.js",
     resources: [{ type: "video", url: "#", title: "Machine Learning Basics" }],
   },
   {
-    id: "19",
+    _id: "19",
     title: "Cross-platform Desktop App",
     difficulty: "intermediate",
     description: "Build app with Electron and React",
@@ -159,14 +159,14 @@ export const projects = [
     ],
   },
   {
-    id: "20",
+    _id: "20",
     title: "IoT Data Dashboard",
     difficulty: "advanced",
     description: "Visualize sensor data with MQTT and Grafana",
     resources: [{ type: "course", url: "#", title: "IoT Protocols Deep Dive" }],
   },
   {
-    id: "21",
+    _id: "21",
     title: "GraphQL API Implementation",
     difficulty: "intermediate",
     description: "Create a GraphQL server with Apollo and TypeScript",
@@ -175,7 +175,7 @@ export const projects = [
     ],
   },
   {
-    id: "22",
+    _id: "22",
     title: "React Native Fitness Tracker",
     difficulty: "advanced",
     description: "Build mobile app with health data integration",
@@ -185,7 +185,7 @@ export const projects = [
     ],
   },
   {
-    id: "23",
+    _id: "23",
     title: "Serverless Image Processing",
     difficulty: "advanced",
     description: "Create image CDN with AWS Lambda and S3",
@@ -194,21 +194,21 @@ export const projects = [
     ],
   },
   {
-    id: "24",
+    _id: "24",
     title: "E-commerce Analytics Engine",
     difficulty: "advanced",
     description: "Implement data pipeline with Kafka and BigQuery",
     resources: [{ type: "article", url: "#", title: "Event Streaming Basics" }],
   },
   {
-    id: "25",
+    _id: "25",
     title: "Cross-browser Extension",
     difficulty: "intermediate",
     description: "Build productivity extension with WebExtensions API",
     resources: [{ type: "video", url: "#", title: "Browser Storage APIs" }],
   },
   {
-    id: "26",
+    _id: "26",
     title: "AI-Powered Search",
     difficulty: "advanced",
     description: "Implement semantic search with OpenAI embeddings",
@@ -217,7 +217,7 @@ export const projects = [
     ],
   },
   {
-    id: "27",
+    _id: "27",
     title: "DevSecOps Pipeline",
     difficulty: "advanced",
     description: "Integrate security scanning into CI/CD workflow",
@@ -227,7 +227,7 @@ export const projects = [
     ],
   },
   {
-    id: "28",
+    _id: "28",
     title: "Microservices Orchestration",
     difficulty: "advanced",
     description: "Implement distributed transactions with Sagas pattern",
@@ -236,7 +236,7 @@ export const projects = [
     ],
   },
   {
-    id: "29",
+    _id: "29",
     title: "AR Navigation System",
     difficulty: "advanced",
     description: "Build AR wayfinding with ARKit and CoreLocation",
@@ -245,7 +245,7 @@ export const projects = [
     ],
   },
   {
-    id: "30",
+    _id: "30",
     title: "Blockchain Voting System",
     difficulty: "advanced",
     description: "Create decentralized voting DApp with Solidity",
@@ -254,7 +254,7 @@ export const projects = [
     ],
   },
   {
-    id: "31",
+    _id: "31",
     title: "Real-time Analytics Dashboard",
     difficulty: "advanced",
     description: "Build monitoring system with TimescaleDB and Grafana",
@@ -263,7 +263,7 @@ export const projects = [
     ],
   },
   {
-    id: "32",
+    _id: "32",
     title: "Mobile Social Platform",
     difficulty: "advanced",
     description: "Create Instagram-like app with React Native",
@@ -273,7 +273,7 @@ export const projects = [
     ],
   },
   {
-    id: "33",
+    _id: "33",
     title: "AI Content Moderation",
     difficulty: "advanced",
     description: "Implement ML-powered moderation with TensorFlow",
@@ -286,21 +286,21 @@ export const projects = [
     ],
   },
   {
-    id: "34",
+    _id: "34",
     title: "Serverless E-commerce",
     difficulty: "intermediate",
     description: "Build storefront with Next.js and Snipcart",
     resources: [{ type: "course", url: "#", title: "JAMstack E-commerce" }],
   },
   {
-    id: "35",
+    _id: "35",
     title: "IoT Home Automation",
     difficulty: "advanced",
     description: "Create smart home system with Raspberry Pi",
     resources: [{ type: "video", url: "#", title: "MQTT Protocol Deep Dive" }],
   },
   {
-    id: "36",
+    _id: "36",
     title: "Multiplayer Game Server",
     difficulty: "advanced",
     description: "Build real-time game with Colyseus and Node.js",
@@ -309,7 +309,7 @@ export const projects = [
     ],
   },
   {
-    id: "37",
+    _id: "37",
     title: "AI Podcast Generator",
     difficulty: "advanced",
     description: "Create audio content with Text-to-Speech APIs",
@@ -318,7 +318,7 @@ export const projects = [
     ],
   },
   {
-    id: "38",
+    _id: "38",
     title: "Cloud Migration Toolkit",
     difficulty: "advanced",
     description: "Implement AWS migration strategies",
@@ -327,7 +327,7 @@ export const projects = [
     ],
   },
   {
-    id: "39",
+    _id: "39",
     title: "Accessibility Audit Tool",
     difficulty: "intermediate",
     description: "Build WCAG compliance checker",
@@ -336,14 +336,14 @@ export const projects = [
     ],
   },
   {
-    id: "40",
+    _id: "40",
     title: "VR Training Simulator",
     difficulty: "advanced",
     description: "Create immersive training with Unity",
     resources: [{ type: "course", url: "#", title: "Unity VR Development" }],
   },
   {
-    id: "31",
+    _id: "31",
     title: "Real-time Collaboration Platform",
     difficulty: "advanced",
     description:
@@ -353,7 +353,7 @@ export const projects = [
     ],
   },
   {
-    id: "32",
+    _id: "32",
     title: "AI-Powered Code Review",
     difficulty: "advanced",
     description: "Implement ML-based code analysis tool",
@@ -362,7 +362,7 @@ export const projects = [
     ],
   },
   {
-    id: "33",
+    _id: "33",
     title: "Mobile Language Learning App",
     difficulty: "intermediate",
     description: "Create Duolingo-style app with React Native",
@@ -370,14 +370,14 @@ export const projects = [
     resources: [{ type: "video", url: "#", title: "Mobile Audio Processing" }],
   },
   {
-    id: "34",
+    _id: "34",
     title: "Cloud Cost Optimizer",
     difficulty: "advanced",
     description: "Build AWS cost monitoring system",
     resources: [{ type: "article", url: "#", title: "FinOps Fundamentals" }],
   },
   {
-    id: "35",
+    _id: "35",
     title: "Accessibility First Component Library",
     difficulty: "intermediate",
     description: "Create WCAG-compliant React components",
@@ -386,7 +386,7 @@ export const projects = [
     ],
   },
   {
-    id: "36",
+    _id: "36",
     title: "Cross-platform Mobile SDK",
     difficulty: "advanced",
     description: "Develop native module bridge for React Native",
@@ -395,7 +395,7 @@ export const projects = [
     ],
   },
   {
-    id: "37",
+    _id: "37",
     title: "Serverless Data Pipeline",
     difficulty: "advanced",
     description: "Orchestrate ETL workflows with AWS Step Functions",
@@ -404,7 +404,7 @@ export const projects = [
     ],
   },
   {
-    id: "38",
+    _id: "38",
     title: "E-commerce Recommendation Engine",
     difficulty: "advanced",
     description: "Implement collaborative filtering with Python",
@@ -413,14 +413,14 @@ export const projects = [
     ],
   },
   {
-    id: "39",
+    _id: "39",
     title: "Mobile AR Navigation",
     difficulty: "advanced",
     description: "Build indoor wayfinding with ARCore",
     resources: [{ type: "video", url: "#", title: "ARKit/ARCore Basics" }],
   },
   {
-    id: "40",
+    _id: "40",
     title: "DevOps Monitoring Dashboard",
     difficulty: "intermediate",
     description: "Visualize metrics with Prometheus and Grafana",
@@ -429,7 +429,7 @@ export const projects = [
     ],
   },
   {
-    id: "41",
+    _id: "41",
     title: "Blockchain Supply Chain",
     difficulty: "advanced",
     description: "Implement product tracking with Hyperledger",
@@ -438,7 +438,7 @@ export const projects = [
     ],
   },
   {
-    id: "42",
+    _id: "42",
     title: "AI Content Generator",
     difficulty: "advanced",
     description: "Create GPT-3 powered writing assistant",
@@ -447,7 +447,7 @@ export const projects = [
     ],
   },
   {
-    id: "43",
+    _id: "43",
     title: "Mobile Payment Gateway",
     difficulty: "advanced",
     description: "Integrate Stripe SDK in Flutter app",
@@ -456,21 +456,21 @@ export const projects = [
     ],
   },
   {
-    id: "44",
+    _id: "44",
     title: "Serverless Chat Application",
     difficulty: "intermediate",
     description: "Build real-time chat with AWS AppSync",
     resources: [{ type: "course", url: "#", title: "GraphQL Subscriptions" }],
   },
   {
-    id: "45",
+    _id: "45",
     title: "IoT Smart Farm System",
     difficulty: "advanced",
     description: "Monitor agricultural sensors with LoRaWAN",
     resources: [{ type: "article", url: "#", title: "LPWAN Technologies" }],
   },
   {
-    id: "46",
+    _id: "46",
     title: "Cross-platform Game Engine",
     difficulty: "advanced",
     description: "Develop 2D engine with C++ and OpenGL",
@@ -479,14 +479,14 @@ export const projects = [
     ],
   },
   {
-    id: "47",
+    _id: "47",
     title: "AI Medical Diagnosis Tool",
     difficulty: "advanced",
     description: "Implement image classification for radiology",
     resources: [{ type: "course", url: "#", title: "Medical AI Ethics" }],
   },
   {
-    id: "48",
+    _id: "48",
     title: "Serverless Video Processing",
     difficulty: "advanced",
     description: "Create video transcoding pipeline with AWS Elemental",
@@ -495,7 +495,7 @@ export const projects = [
     ],
   },
   {
-    id: "49",
+    _id: "49",
     title: "Quantum Computing Simulator",
     difficulty: "advanced",
     description: "Build quantum circuit visualizer with Qiskit",
@@ -504,7 +504,7 @@ export const projects = [
     ],
   },
   {
-    id: "50",
+    _id: "50",
     title: "Open Source Contribution Dashboard",
     difficulty: "intermediate",
     description: "Track GitHub contributions with OAuth and API",
@@ -513,7 +513,7 @@ export const projects = [
     ],
   },
   {
-    id: "51",
+    _id: "51",
     title: "React Todo App with Firebase",
     difficulty: "intermediate",
     description: "Create collaborative todo app with real-time sync",
@@ -522,7 +522,7 @@ export const projects = [
     ],
   },
   {
-    id: "52",
+    _id: "52",
     title: "E-commerce Search API",
     difficulty: "advanced",
     description: "Build search microservice with Elasticsearch and Node.js",
@@ -536,7 +536,7 @@ export const projects = [
     ],
   },
   {
-    id: "53",
+    _id: "53",
     title: "Mobile Fitness Tracker",
     difficulty: "intermediate",
     description: "Create cross-platform fitness app with React Native",
@@ -545,7 +545,7 @@ export const projects = [
     ],
   },
   {
-    id: "54",
+    _id: "54",
     title: "React Native Social App",
     difficulty: "advanced",
     description: "Build a social media app with real-time messaging and posts",
@@ -554,7 +554,7 @@ export const projects = [
     ],
   },
   {
-    id: "55",
+    _id: "55",
     title: "Python Data Dashboard",
     difficulty: "intermediate",
     description: "Create analytics dashboard with Plotly and Dash",
@@ -563,7 +563,7 @@ export const projects = [
     ],
   },
   {
-    id: "56",
+    _id: "56",
     title: "Serverless Blog Platform",
     difficulty: "advanced",
     description: "Build JAMstack blog with Next.js and Vercel",
@@ -571,14 +571,14 @@ export const projects = [
     resources: [{ type: "course", url: "#", title: "Next.js SSG Deep Dive" }],
   },
   {
-    id: "57",
+    _id: "57",
     title: "E-commerce Payment Gateway",
     difficulty: "advanced",
     description: "Integrate Stripe payments with Node.js",
     resources: [{ type: "article", url: "#", title: "PCI Compliance Guide" }],
   },
   {
-    id: "58",
+    _id: "58",
     title: "ML Model Deployment",
     difficulty: "advanced",
     description: "Deploy TensorFlow model as microservice with FastAPI",

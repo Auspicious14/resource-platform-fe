@@ -1,5 +1,5 @@
 export interface IProject {
-  id: string;
+  _id: string;
   title: string;
   difficulty: string | "beginner" | "intermediate" | "advanced";
   description: string;

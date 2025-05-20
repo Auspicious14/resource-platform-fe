@@ -1,28 +1,6 @@
-import { notFound } from "next/navigation";
-import { projects } from "@/modules/projects/data";
-import { GetServerSideProps } from "next";
-import React from "react";
+import { IProject } from "./model";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req, params } = context;
-  const token = req.cookies?.token;
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
-    };
-  }
-  // Pass params as props for the page
-  return { props: { id: params?.id } };
-};
-
-export default function ProjectPage({ id }: { id: string }) {
-  const project = projects.find((p) => p.id === id);
-
-  if (!project) return notFound();
-
+export const ProjectDetailPage = ({ project }: { project: IProject }) => {
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
       <div className="mb-8">
@@ -95,4 +73,4 @@ export default function ProjectPage({ id }: { id: string }) {
       </div>
     </div>
   );
-}
+};
