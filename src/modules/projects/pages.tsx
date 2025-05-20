@@ -8,9 +8,9 @@ import { useProjectState } from "./context";
 export const ProjectsPage = () => {
   const { getProjects, projects: fetchedProjects } = useProjectState();
 
-  useEffect(() => {
-    getProjects();
-  }, []);
+  // useEffect(() => {
+  //   getProjects();
+  // }, []);
   const allProjects: IProject[] = [...fetchedProjects, ...projects];
 
   return (

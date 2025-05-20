@@ -1,3 +1,4 @@
+import { getCookie } from "@/helper";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -10,9 +11,11 @@ export const AxiosClient = axios.create({
 
 AxiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof document !== "undefined") {
+      const token = getCookie("token") || localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },

@@ -15,19 +15,10 @@ interface IProjectState {
   deleteProject: (id: string) => Promise<boolean>;
   getProjects: () => Promise<void>;
   getOneProject: (id: string) => Promise<any>;
+  setProjects: (projects: IProject[]) => void;
 }
 
-const ProjectContext = createContext<IProjectState>({
-  project: null,
-  projects: [],
-  isLoading: false,
-  error: null,
-  createProject: async () => {},
-  updateProject: async () => {},
-  getProjects: async () => {},
-  getOneProject: async () => {},
-  deleteProject: async () => false,
-});
+const ProjectContext = createContext<IProjectState | undefined>(undefined);
 
 export const useProjectState = () => {
   const context = useContext(ProjectContext);
@@ -153,6 +144,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         getProjects,
         getOneProject,
         deleteProject,
+        setProjects,
       }}
     >
       {children}
