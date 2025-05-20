@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <div className="h-screen bg-blue-50">
+      <div className=" bg-blue-50">
         <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
             <Link

@@ -74,8 +74,9 @@ export default function CreateProjectPage() {
             requirements: [""],
             resources: [],
           }}
-          validationSchema={validationSchema}
+          // validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
+            console.log({ values });
             createProject({
               ...values,
               difficulty: values.difficulty.value,
@@ -116,7 +117,9 @@ export default function CreateProjectPage() {
                 name="difficulty"
                 options={difficultyOptions}
                 value={values.difficulty.value}
-                onChange={(option) => setFieldValue("difficulty", option)}
+                onChange={({ target }) =>
+                  setFieldValue("difficulty", target.value)
+                }
               />
               <FieldArray name="requirements">
                 {({ push, remove }) => (
@@ -172,10 +175,14 @@ export default function CreateProjectPage() {
                         <SelectInput
                           name={`resources.${index}.type`}
                           label="Type"
+                          className="w-full"
                           options={resourceTypeOptions}
-                          value={resource.type}
-                          onChange={(option) =>
-                            setFieldValue(`resources.${index}.type`, option)
+                          value={resource.type.value}
+                          onChange={({ target }) =>
+                            setFieldValue(
+                              `resources.${index}.type`,
+                              target.value
+                            )
                           }
                         />
                         <TextInput
@@ -220,6 +227,7 @@ export default function CreateProjectPage() {
               </FieldArray>
               <Button
                 type="submit"
+                onClick={() => handleSubmit()}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={isLoading}
                 isLoading={isLoading}

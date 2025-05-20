@@ -49,7 +49,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
   const createProject = async (values: any) => {
     setIsLoading(true);
     try {
-      const response = await AxiosClient.post("/projects", values);
+      const response = await AxiosClient.post("/projects/create", values);
       const data = response.data?.data;
       if (data) {
         setProjects((prev) => [...prev, response.data]);
