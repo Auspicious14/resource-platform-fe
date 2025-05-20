@@ -20,12 +20,9 @@ export const HomePage = () => {
               Learn by building real-world projects with guided resources,
               curated learning paths, and community support.
             </p>
-            <button
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg
-            hover:bg-blue-700 transition-colors text-lg font-medium"
-            >
+            <Button onClick={() => router.push("/projects")}>
               Get Started
-            </button>
+            </Button>
           </div>
         </div>
         <div className="max-w-6xl mx-auto py-16 px-4">
