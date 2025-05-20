@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
   if (isProtected) {
     // Check for authentication cookie (adjust cookie name as needed)
     const authCookie = request.cookies.get("token");
-    console.log(authCookie, "token")
+    console.log(authCookie, 'token');
     if (!authCookie) {
       // Redirect to login if not authenticated
       return NextResponse.redirect(new URL("/signin", request.url));

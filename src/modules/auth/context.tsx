@@ -4,6 +4,7 @@ import { FormikHelpers } from "formik";
 import { AxiosClient } from "../../components";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { setCookie } from "@/helper";
 
 export interface AuthContextType {
   user: any;
@@ -43,8 +44,12 @@ export const AuthContextProvider = ({
     try {
       const response = await AxiosClient.post(url, values);
       if (response?.data) {
-        setUser(response.data);
-        toast.success("Success!");
+        const data = response?.data?.data;
+        if (type === "signin") {
+          setUser(data);
+          setCookie("token", data?.token, 7);
+          toast.success("Success!");
+        }
         router.push(type === "signup" ? "/signin" : `/`);
       }
     } catch (err: any) {
