@@ -47,6 +47,7 @@ export const AuthContextProvider = ({
         const data = response?.data?.data;
         if (type === "signin") {
           setUser(data);
+          localStorage.setItem("token", data?.token);
           setCookie("token", data?.token, 7);
           toast.success("Success!");
         }

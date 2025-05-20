@@ -170,35 +170,40 @@ export default function CreateProjectPage() {
                     {values.resources.map((resource: any, index) => (
                       <div
                         key={index}
-                        className="flex flex-col md:flex-row gap-2 items-start w-full mb-2"
+                        className="md:flex flex-col md:flex-row gap-2 items-start w-full mb-2 md:mb-4"
                       >
-                        <SelectInput
-                          name={`resources.${index}.type`}
-                          label="Type"
-                          className="w-full"
-                          options={resourceTypeOptions}
-                          value={resource.type.value}
-                          onChange={({ target }) =>
-                            setFieldValue(
-                              `resources.${index}.type`,
-                              target.value
-                            )
-                          }
-                        />
-                        <TextInput
-                          name={`resources.${index}.title`}
-                          label="Title"
-                          onChange={handleChange}
-                          value={resource.title}
-                          placeholder="Resource title"
-                        />
-                        <TextInput
-                          name={`resources.${index}.url`}
-                          label="URL"
-                          onChange={handleChange}
-                          value={resource.url}
-                          placeholder="Resource URL"
-                        />
+                        <div className="md:w-1/3 w-full mb-2 md:mb-0">
+                          <SelectInput
+                            name={`resources.${index}.type`}
+                            label="Type"
+                            options={resourceTypeOptions}
+                            value={resource.type.value}
+                            onChange={({ target }) =>
+                              setFieldValue(
+                                `resources.${index}.type`,
+                                target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="mb-2 md:mb-0">
+                          <TextInput
+                            name={`resources.${index}.title`}
+                            label="Title"
+                            onChange={handleChange}
+                            value={resource.title}
+                            placeholder="Resource title"
+                          />
+                        </div>
+                        <div className="mb-2 md:mb-0">
+                          <TextInput
+                            name={`resources.${index}.url`}
+                            label="URL"
+                            onChange={handleChange}
+                            value={resource.url}
+                            placeholder="Resource URL"
+                          />
+                        </div>
                         <button
                           type="button"
                           onClick={() => remove(index)}
