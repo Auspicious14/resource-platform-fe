@@ -1,23 +1,18 @@
 "use client";
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { projects } from "./data";
+// import { projects } from "./data";
 import { IProject } from "./model";
 import { useProjectState } from "./context";
 
 export const ProjectsPage = () => {
-  const { getProjects, projects: fetchedProjects } = useProjectState();
-
-  // useEffect(() => {
-  //   getProjects();
-  // }, []);
-  const allProjects: IProject[] = [...fetchedProjects, ...projects];
+  const { projects } = useProjectState();
 
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold text-blue-900 mb-8">All Projects</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allProjects.map((project: IProject) => (
+        {projects.map((project: IProject) => (
           <Link
             key={project._id}
             href={`/projects/${project._id}`}

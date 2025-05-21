@@ -8,14 +8,17 @@ import { useRouter } from "next/navigation";
 interface IProjectState {
   project: IProject | null;
   projects: IProject[];
+  featuredProjects: IProject[];
   isLoading: boolean;
   error: string | null;
   createProject: (values: any) => Promise<any>;
   updateProject: (id: string, values: any) => Promise<any>;
   deleteProject: (id: string) => Promise<boolean>;
   getProjects: () => Promise<void>;
+  getFeaturedProjects: () => Promise<void>;
   getOneProject: (id: string) => Promise<any>;
   setProjects: (projects: IProject[]) => void;
+  setFeaturedProjects: (projects: IProject[]) => void;
 }
 
 const ProjectContext = createContext<IProjectState | undefined>(undefined);
@@ -34,7 +37,8 @@ interface IProps {
 
 export const ProjectConextProvider = ({ children }: IProps) => {
   const router = useRouter();
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<IProject[]>([]);
+  const [featuredProjects, setFeaturedProjects] = useState<IProject[]>([]);
   const [project, setProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +70,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       const data = response.data?.data;
       if (data) {
         setProjects((prev) =>
-          prev.map((project) => (project.id === id ? response.data : project))
+          prev.map((project) => (project._id === id ? response.data : project))
         );
         toast.success("Project updated successfully");
         return data;
@@ -80,6 +84,21 @@ export const ProjectConextProvider = ({ children }: IProps) => {
     }
   };
 
+  const getFeaturedProjects = async () => {
+    setIsLoading(true);
+    try {
+      const response = await AxiosClient.get("/projects/featured");
+      const data = response.data?.data;
+      if (data) {
+        setFeaturedProjects(data);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Fetching failed");
+      toast.error(err.response?.data?.message || "Project fetching failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const getProjects = async () => {
     setIsLoading(true);
     try {
@@ -119,7 +138,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       const response = await AxiosClient.delete(`/projects/${id}`);
       const message = response.data?.message;
       if (message) {
-        setProjects((prev) => prev.filter((project) => project.id !== id));
+        setProjects((prev) => prev.filter((project) => project._id !== id));
         toast.success(message || "Project deleted successfully");
         return true;
       }
@@ -138,6 +157,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         isLoading,
         error,
         projects,
+        featuredProjects,
         project,
         createProject,
         updateProject,
@@ -145,6 +165,8 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         getOneProject,
         deleteProject,
         setProjects,
+        setFeaturedProjects,
+        getFeaturedProjects,
       }}
     >
       {children}

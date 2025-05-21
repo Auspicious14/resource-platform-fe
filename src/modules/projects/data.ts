@@ -587,3 +587,23 @@ export const projects = [
     ],
   },
 ];
+
+// export const projects = [
+//   {
+//     _id: "1",
+//     title: "Landing Page Template",
+//     difficulty: "beginner",
+//     description:
+//       "Build a responsive landing page with modern design principles",
+//     resources: [{ type: "video", url: "#", title: "HTML & CSS Crash Course" }],
+//   },
+//   {
+//     _id: "58",
+//     title: "ML Model Deployment",
+//     difficulty: "advanced",
+//     description: "Deploy TensorFlow model as microservice with FastAPI",
+//     resources: [
+//       { type: "video", url: "#", title: "Docker for Machine Learning" },
+//     ],
+//   },
+// ];

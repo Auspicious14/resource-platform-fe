@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { IProject } from "../projects/model";
 import { Button } from "@/components";
 import { useRouter } from "next/navigation";
-import { projects } from "../projects/data";
 import Link from "next/link";
+import { useProjectState } from "../projects/context";
 
 export const HomePage = () => {
+  const { featuredProjects } = useProjectState();
   const router = useRouter();
 
   return (
@@ -115,7 +115,7 @@ export const HomePage = () => {
               Featured Projects
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects?.slice(0, 4).map((project) => (
+              {featuredProjects?.slice(0, 4).map((project) => (
                 <Link
                   href={`/projects/${project._id}`}
                   key={project._id}
