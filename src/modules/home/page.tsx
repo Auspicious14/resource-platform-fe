@@ -4,6 +4,7 @@ import { IProject } from "../projects/model";
 import { Button } from "@/components";
 import { useRouter } from "next/navigation";
 import { projects } from "../projects/data";
+import Link from "next/link";
 
 export const HomePage = () => {
   const router = useRouter();
@@ -115,8 +116,9 @@ export const HomePage = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects?.slice(0, 4).map((project) => (
-                <div
-                  key={project.id}
+                <Link
+                  href={`/projects/${project._id}`}
+                  key={project._id}
                   className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -154,7 +156,7 @@ export const HomePage = () => {
                       ))}
                     </ul>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
