@@ -19,24 +19,21 @@ const resourceTypeOptions = [
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Project title is required"),
-  difficulty: Yup.object({
-    label: Yup.string().required(),
-    value: Yup.string()
-      .oneOf(["beginner", "intermediate", "advanced"])
-      .required("Difficulty is required"),
-  }).required(),
+  difficulty: Yup.string()
+    .oneOf(["beginner", "intermediate", "advanced"])
+    .required("Difficulty is required"),
   description: Yup.string().required("Description is required"),
+  coverImage: Yup.string()
+    .url("Invalid image URL")
+    .required("Cover image is required"),
   requirements: Yup.array()
     .of(Yup.string().required("Requirement can't be empty"))
     .min(1, "At least one requirement is required"),
   resources: Yup.array().of(
     Yup.object().shape({
-      type: Yup.object({
-        label: Yup.string().required(),
-        value: Yup.string()
-          .oneOf(["video", "article", "course"])
-          .required("Type is required"),
-      }).required(),
+      type: Yup.string()
+        .oneOf(["video", "article", "course"])
+        .required("Type is required"),
       url: Yup.string().url("Invalid URL").required("Resource URL is required"),
       title: Yup.string().required("Resource title is required"),
     })
@@ -57,18 +54,13 @@ export default function CreateProjectPage() {
             title: "",
             description: "",
             difficulty: difficultyOptions[0],
+            coverImage: "",
             requirements: [""],
             resources: [],
           }}
-          // validationSchema={validationSchema}
+          validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            createProject({
-              ...values,
-              resources: values.resources.map((r: any) => ({
-                ...r,
-                type: r.type.value,
-              })),
-            });
+            createProject(values);
           }}
         >
           {({
@@ -95,6 +87,13 @@ export default function CreateProjectPage() {
                 onChange={handleChange}
                 value={values.description}
                 placeholder="Enter project description"
+              />
+              <TextInput
+                label="Cover Image URL"
+                name="coverImage"
+                onChange={handleChange}
+                value={values.coverImage}
+                placeholder="Paste cover image URL"
               />
               <SelectInput
                 label="Difficulty"

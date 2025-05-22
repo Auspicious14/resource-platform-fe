@@ -115,7 +115,7 @@ export const HomePage = () => {
               Featured Projects
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProjects?.slice(0, 4).map((project) => (
+              {featuredProjects?.map((project) => (
                 <Link
                   href={`/projects/${project._id}`}
                   key={project._id}
