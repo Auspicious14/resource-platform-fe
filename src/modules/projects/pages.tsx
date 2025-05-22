@@ -125,6 +125,13 @@ export const ProjectsPage = () => {
                   </span>
                 </div>
                 <p className="text-gray-600 mb-4">{project.description}</p>
+                <div className="flex gap-2 items-center flex-wrap">
+                  {project?.requirements?.map((r, i) => (
+                    <p key={i} className="text-gray-600 capitalize text-sm">
+                      {r} |
+                    </p>
+                  ))}
+                </div>
               </Link>
             ))}
       </div>
