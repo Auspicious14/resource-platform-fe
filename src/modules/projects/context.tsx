@@ -19,6 +19,7 @@ interface IProjectState {
   getOneProject: (id: string) => Promise<any>;
   setProjects: (projects: IProject[]) => void;
   setFeaturedProjects: (projects: IProject[]) => void;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 const ProjectContext = createContext<IProjectState | undefined>(undefined);
@@ -167,6 +168,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         setProjects,
         setFeaturedProjects,
         getFeaturedProjects,
+        setIsLoading,
       }}
     >
       {children}
