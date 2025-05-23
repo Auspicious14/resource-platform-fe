@@ -15,7 +15,7 @@ export const HomePage = () => {
         <div className="bg-gradient-to-b from-blue-50 to-white py-20 px-4">
           <div className="max-w-6xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-blue-900 mb-6">
-              Master Web Development Through Projects
+              Master Software Development Through Projects
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Learn by building real-world projects with guided resources,

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -22,9 +23,14 @@ export default function RootLayout({
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
             <Link
               href="/"
-              className="text-2xl font-bold font-sans hover:text-blue-200 transition-colors duration-200 flex items-center"
+              // className="text-2xl font-bold font-sans hover:text-blue-200 transition-colors duration-200 flex items-center"
             >
-              DevResourceHub
+              <Image
+                src="/devresourcehub logo.jpeg"
+                alt="logo"
+                width={70}
+                height={70}
+              />
             </Link>
             <div className="space-x-6">
               <Link
