@@ -105,7 +105,7 @@ export default function CreateProjectPage() {
                 label="Difficulty"
                 name="difficulty"
                 options={difficultyOptions}
-                value={values.difficulty.value}
+                value={values.difficulty}
                 onChange={({ target }) =>
                   setFieldValue("difficulty", target.value)
                 }
@@ -166,7 +166,7 @@ export default function CreateProjectPage() {
                             name={`resources.${index}.type`}
                             label="Type"
                             options={resourceTypeOptions}
-                            value={resource.type.value}
+                            value={resource.type}
                             onChange={({ target }) =>
                               setFieldValue(
                                 `resources.${index}.type`,
