@@ -53,10 +53,16 @@ export default function CreateProjectPage() {
           initialValues={{
             title: "",
             description: "",
-            difficulty: difficultyOptions[0],
+            difficulty: "beginner",
             coverImage: "",
             requirements: [""],
-            resources: [],
+            resources: [
+      {
+        type: "video",
+        url: "",
+        title: "",
+      },
+    ],
           }}
           validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
