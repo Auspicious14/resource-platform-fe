@@ -46,9 +46,7 @@ export default function RootLayout({
       </div>
       <footer className="bg-blue-900 text-white py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="mb-4">
-            © {fullYear} DevResourceHub. All rights reserved.
-          </p>
+          <p className="mb-4">© {fullYear} Devdrill. All rights reserved.</p>
           <div className="flex justify-center space-x-6">
             <a
               href="#"

@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <title>Dev Resource Hub</title>
+      <title>Dev Drill</title>
       <meta
         name="description"
         content="Learn by building real-world projects with guided resources, curated learning paths, and community support."
