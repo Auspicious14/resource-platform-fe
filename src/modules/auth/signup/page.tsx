@@ -1,11 +1,17 @@
 "use client";
 import { Formik } from "formik";
 import { useAuth } from "../context";
-import { Button, TextInput } from "../../../components";
+import { Button, SelectInput, TextInput } from "../../../components";
 import Link from "next/link";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import React from "react";
+
+const difficultyOptions = [
+  { label: "Beginner", value: "beginner" },
+  { label: "Intermediate", value: "intermediate" },
+  { label: "Advanced", value: "advanced" },
+];
 
 export default function SignUpPage() {
   const { signUp, isLoading } = useAuth();
@@ -26,6 +32,7 @@ export default function SignUpPage() {
             firstName: "",
             lastName: "",
             email: "",
+            level: "",
             password: "",
           }}
           validationSchema={validationSchema}
@@ -35,7 +42,7 @@ export default function SignUpPage() {
             });
           }}
         >
-          {({ handleSubmit, handleChange, values, errors, touched }) => (
+          {({ handleSubmit, handleChange, values, setFieldValue }) => (
             <form onSubmit={handleSubmit} className="space-y-4">
               <TextInput
                 label="First Name"
@@ -61,6 +68,13 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 value={values.email}
                 placeholder="Enter your email"
+              />
+              <SelectInput
+                label="Difficulty"
+                name="level"
+                options={difficultyOptions}
+                value={values.level}
+                onChange={({ target }) => setFieldValue("level", target.value)}
               />
               <TextInput
                 label="Password"
