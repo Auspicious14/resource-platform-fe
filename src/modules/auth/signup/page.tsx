@@ -32,7 +32,7 @@ export default function SignUpPage() {
             firstName: "",
             lastName: "",
             email: "",
-            level: "",
+            level: "beginner",
             password: "",
           }}
           validationSchema={validationSchema}

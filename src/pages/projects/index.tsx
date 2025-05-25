@@ -41,8 +41,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   const data = response.data?.data;
 
-  if (!data) {
-    throw new Error("Project not found");
-  }
-  return { props: { projects: data } };
+  // if (!data) {
+  //   throw new Error("Project not found");
+  // }
+  return { props: { projects: data || null } };
 };
