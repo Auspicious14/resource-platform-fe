@@ -19,6 +19,9 @@ export default function SignUpPage() {
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
     password: Yup.string().min(8, "Too short!").required("Required"),
+    level: Yup.string()
+    .oneOf(["beginner", "intermediate", "advanced"])
+    .required("Experience level is required"),
   });
 
   return (
@@ -70,7 +73,7 @@ export default function SignUpPage() {
                 placeholder="Enter your email"
               />
               <SelectInput
-                label="Difficulty"
+                label="Experience Level"
                 name="level"
                 options={difficultyOptions}
                 value={values.level}
