@@ -2,6 +2,7 @@ import React, { FC, ComponentProps, JSX } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthContextProvider } from "../modules/auth/context";
 import { ProjectConextProvider } from "@/modules/projects/context";
+import { ChatContextProvider } from "@/modules/chat/context";
 
 export const combineContext = (...components: FC[]): FC<any> => {
   const CombinedComponent = components.reduce(
@@ -42,5 +43,5 @@ export const combineContext = (...components: FC[]): FC<any> => {
   return CombinedComponent;
 };
 
-const providers = [AuthContextProvider, ProjectConextProvider] as any;
+const providers = [AuthContextProvider, ProjectConextProvider, ChatContextProvider] as any;
 export const AppContextProvider = combineContext(...providers);
