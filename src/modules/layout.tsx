@@ -18,7 +18,7 @@ export default function RootLayout({
   const fullYear = new Date().getFullYear();
   return (
     <>
-      <div className=" bg-blue-50">
+      <div>
         <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
             <Link
@@ -39,12 +39,18 @@ export default function RootLayout({
               >
                 Projects
               </Link>
+              <Link
+                href="/chat"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
+                AI Guide
+              </Link>
             </div>
           </nav>
         </header>
-        {children}
       </div>
-      <footer className="bg-blue-900 text-white py-8 mt-20">
+      {children}
+      <footer className="bg-blue-900 text-white py-8 ">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="mb-4">© {fullYear} Devdrill. All rights reserved.</p>
           <div className="flex justify-center space-x-6">

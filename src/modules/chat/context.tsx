@@ -32,9 +32,7 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   const getMessages = async (query?: any) => {
     setLoading(true);
     try {
-      const res = await AxiosClient.get(
-        `${process.env.NEXT_PUBLIC_API_ROUTE}/chats`
-      );
+      const res = await AxiosClient.get(`/chats`);
       const data = await res?.data?.data;
       if (data) {
         setMessages(data);
@@ -49,10 +47,7 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
 
   const sendMessage = async (question: string, chatId?: string) => {
     try {
-      const res = await AxiosClient.post(
-        `${process.env.NEXT_PUBLIC_API_ROUTE}/chat-with-ai`,
-        { question, chatId }
-      );
+      const res = await AxiosClient.post(`/chat-with-ai`, { question, chatId });
       const data = res?.data?.data;
       if (data) {
         setMessages((prev) => [...prev, data]);

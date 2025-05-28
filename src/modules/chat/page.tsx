@@ -13,62 +13,64 @@ export const ChatPage: React.FC = () => {
     messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
 
   const handleSendMessage = async (question: string) => {
-    if (question === "") return toast.error("Enter a message to proceed");
+    if (question.trim() === "")
+      return toast.error("Enter a message to proceed");
     sendMessage(question, latestChatId);
+    setNewPrompt("");
   };
 
   return (
-    <div className="flex flex-col h-svh bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-          AI Guidance
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          AI Career Chat
         </h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Ask anything about career paths, learning, or project guidance!
+        </p>
+      </div>
 
-        <div className="flex-1 overflow-y-auto space-y-6 pr-1">
-          {messages?.map((item) => (
-            <div key={item._id} className="flex flex-col gap-2">
-              {item?.role === "assistant" && (
-                <div className="flex justify-end">
-                  <div className="bg-blue-100 dark:bg-blue-900 text-gray-800 dark:text-gray-100 px-4 py-3 rounded-2xl max-w-[80%]">
-                    {item.response}
-                  </div>
-                </div>
-              )}
-
-              {item?.role === "user" && (
-                <div className="flex justify-start items-center gap-2">
-                  <div className="bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 rounded-2xl max-w-[80%]">
-                    {item.response}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-3 mt-4">
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-3">
-            <TextInput
-              name="prompt"
-              ignoreFormik
-              type="text"
-              value={newPrompt}
-              onChange={(e) => setNewPrompt(e.target.value)}
-              placeholder="Type your prompt..."
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleSendMessage(newPrompt)
-              }
-              className="flex-1 rounded-full border border-gray-300 dark:border-gray-600 px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Button
-              onClick={() => handleSendMessage(newPrompt)}
-              disabled={loading}
-              isLoading={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {messages.map((item) => (
+          <div
+            key={item._id}
+            className={`flex ${
+              item.role === "user" ? "justify-start" : "justify-end"
+            }`}
+          >
+            <div
+              className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm shadow-md ${
+                item.role === "user"
+                  ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-white"
+                  : "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-white"
+              }`}
             >
-              <PaperAirplaneIcon className="w-5 h-5 rotate-90" />
-            </Button>
+              {item.response}
+            </div>
           </div>
+        ))}
+      </div>
+
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto flex items-center gap-3">
+          <TextInput
+            name="prompt"
+            ignoreFormik
+            type="text"
+            value={newPrompt}
+            onChange={(e) => setNewPrompt(e.target.value)}
+            placeholder="Type your prompt..."
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage(newPrompt)}
+            className="flex-1 rounded-full px-4 py-3 text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+          />
+          <Button
+            onClick={() => handleSendMessage(newPrompt)}
+            disabled={loading}
+            isLoading={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition"
+          >
+            <PaperAirplaneIcon className="w-5 h-5 rotate-90" />
+          </Button>
         </div>
       </div>
     </div>
