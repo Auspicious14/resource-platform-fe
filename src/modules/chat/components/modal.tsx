@@ -60,7 +60,7 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
           ))}
         </div>
 
-        <div className="border-t px-6 py-4 dark:border-gray-700 flex items-center gap-3">
+        <div className="border-t px-6 py-4 dark:border-gray-700 flex items-center gap-3 w-full">
           <TextInput
             name="prompt"
             ignoreFormik
@@ -68,12 +68,13 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
             onChange={(e) => setNewPrompt(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage(newPrompt)}
             placeholder="Ask your question..."
-            className="flex-1 rounded-full px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm"
+            className="flex-1 rounded-full px-4 py-2 bg-gray-100 dark:bg-gray-800 text-sm w-[80%]"
           />
           <Button
             onClick={() => handleSendMessage(newPrompt)}
             disabled={loading}
             isLoading={loading}
+            className="w-10 h-10 rounded-full flex flex-col justify-center text-center"
           >
             <PaperAirplaneIcon className="w-5 h-5 rotate-90" />
           </Button>
