@@ -191,15 +191,15 @@ export const ProjectsPage = () => {
           className="border px-2 py-1 rounded w-1/3"
           options={difficultyOptions}
         />
-        <Button
+        
+      </form>
+<Button
           type="button"
         onClick={() => setShowChatModal(true)}
         className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full shadow hover:opacity-90"
       >
         Ask AI
       </Button>
-      </form>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading
           ? Array.from({ length: 6 }).map((_, idx) => (
