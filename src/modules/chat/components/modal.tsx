@@ -19,12 +19,17 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center px-4">
-      <div className="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-xl shadow-lg flex flex-col h-[90vh] relative overflow-hidden">
-        {/* Header */}
+      <div className="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-xl shadow-lg flex flex-col h-[70vh] relative overflow-hidden">
+      
         <div className="flex justify-between items-center px-6 py-4 border-b dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-            AI Guide
-          </h2>
+                <div >
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          AI Career Chat
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Ask anything about career paths, learning, or project guidance!
+        </p>
+      </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-red-500"
@@ -33,7 +38,8 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
           </button>
         </div>
 
-        {/* Messages */}
+              
+
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {messages.map((item) => (
             <div key={item._id} className="flex flex-col gap-2">
@@ -54,7 +60,6 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
           ))}
         </div>
 
-        {/* Input */}
         <div className="border-t px-6 py-4 dark:border-gray-700 flex items-center gap-3">
           <TextInput
             name="prompt"
@@ -69,7 +74,6 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
             onClick={() => handleSendMessage(newPrompt)}
             disabled={loading}
             isLoading={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full"
           >
             <PaperAirplaneIcon className="w-5 h-5 rotate-90" />
           </Button>
