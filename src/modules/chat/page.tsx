@@ -15,7 +15,7 @@ export const ChatPage: React.FC = () => {
   const handleSendMessage = async (question: string) => {
     if (question.trim() === "")
       return toast.error("Enter a message to proceed");
-    sendMessage(question, latestChatId);
+    await sendMessage(question, latestChatId);
     setNewPrompt("");
   };
 
