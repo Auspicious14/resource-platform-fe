@@ -11,13 +11,13 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
   const latestChatId =
     messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
 
-useEffect(() => {
-  getMessages()
-}, [])
-  
+  useEffect(() => {
+    getMessages();
+  }, []);
+
   const handleSendMessage = async (question: string) => {
     if (!question.trim()) return toast.error("Enter a message to proceed");
-    sendMessage(question, latestChatId);
+    await sendMessage(question, latestChatId);
     setNewPrompt("");
   };
 
