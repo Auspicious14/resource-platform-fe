@@ -49,9 +49,8 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
     try {
       const res = await AxiosClient.post(`/chat-with-ai`, { question, chatId });
       const data = res?.data?.messages;
-      console.log({ data });
       if (data) {
-        setMessages(data);
+        setMessages((prev) => [...prev, data]);
       }
       return data;
     } catch (error: any) {
