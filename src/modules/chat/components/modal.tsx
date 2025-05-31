@@ -47,13 +47,13 @@ useEffect(() => {
               {item.role === "assistant" ? (
                 <div className="flex justify-end">
                   <div className="bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-white px-4 py-3 rounded-2xl max-w-[75%]">
-                    {item.response}
+                    {item.content}
                   </div>
                 </div>
               ) : (
                 <div className="flex justify-start">
                   <div className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 rounded-2xl max-w-[75%]">
-                    {item.response}
+                    {item.content}
                   </div>
                 </div>
               )}
