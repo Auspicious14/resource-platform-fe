@@ -5,12 +5,16 @@ import toast from "react-hot-toast";
 import { useChatState } from "../context";
 
 export const ChatModal = ({ onClose }: { onClose: () => void }) => {
-  const { loading, sendMessage, messages } = useChatState();
+  const { loading, sendMessage, messages, getMessages } = useChatState();
   const [newPrompt, setNewPrompt] = useState("");
 
   const latestChatId =
     messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
 
+useEffect(() => {
+  getMessages()
+}, [])
+  
   const handleSendMessage = async (question: string) => {
     if (!question.trim()) return toast.error("Enter a message to proceed");
     sendMessage(question, latestChatId);
