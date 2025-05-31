@@ -1,6 +1,6 @@
 export interface IChat {
   _id: string;
   chatId: string;
-  response: string;
+  content: string;
   role: "user" | "assistant";
 }
