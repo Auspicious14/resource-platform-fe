@@ -45,7 +45,7 @@ export const ChatPage: React.FC = () => {
                   : "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-white"
               }`}
             >
-              {item.response}
+              {item.content}
             </div>
           </div>
         ))}
