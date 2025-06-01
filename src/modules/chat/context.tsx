@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { AxiosClient } from "../../components";
 import { IChat } from "./model";
+import { getCookie } from "@/helper";
 
 interface IChatState {
   loading: boolean;
+  response: string;
   messages: IChat[];
-  setMessages: (category: IChat[]) => void;
+  setResponse: (responsne: string) => void;
+  setMessages: React.Dispatch<React.SetStateAction<IChat[]>>;
   getMessages: (query?: any) => Promise<void>;
   sendMessage: (question: string, chatId?: string) => Promise<any>;
 }
@@ -28,6 +31,7 @@ interface IProps {
 export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   const [messages, setMessages] = useState<IChat[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<string>("");
 
   const getMessages = async (query?: any) => {
     setLoading(true);
@@ -46,15 +50,44 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   };
 
   const sendMessage = async (question: string, chatId?: string) => {
+    setLoading(true);
+    const baseURL = process.env.NEXT_PUBLIC_API_URL;
+    const token = getCookie("token") || localStorage.getItem("token");
     try {
-      const res = await AxiosClient.post(`/chat-with-ai`, { question, chatId });
-      const data = res?.data?.messages;
-      if (data) {
-        setMessages((prev) => [...prev, ...data]);
+      const res = await fetch(`${baseURL}/chat-with-ai`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ question, chatId }),
+      });
+      // console.log(res.data, "responseee");
+      const decoder = new TextDecoder();
+      const reader: any = res.body?.getReader();
+      let done = false;
+      let message = "";
+
+      while (!done) {
+        const { value, done: doneReading } = await reader?.read();
+        done = doneReading;
+        if (done) break;
+        const chunkValue = decoder.decode(value, { stream: true });
+        message += chunkValue;
+        setResponse(message);
+        console.log(message, "message");
       }
-      return data;
+      // console.log(message, "message");
+
+      // const data = res?.data?.messages;
+      // if (data) {
+      //   setMessages((prev) => [...prev, ...data]);
+      // }
+      // return data;
     } catch (error: any) {
       toast.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,9 +95,11 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
     <ChatContext.Provider
       value={{
         loading,
+        response,
         messages,
         getMessages,
         setMessages,
+        setResponse,
         sendMessage,
       }}
     >

@@ -3,10 +3,21 @@ import { XMarkIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useChatState } from "../context";
+import { IChat } from "../model";
+import { MessageBubble } from "./bubble";
 
 export const ChatModal = ({ onClose }: { onClose: () => void }) => {
-  const { loading, sendMessage, messages, getMessages } = useChatState();
+  const {
+    loading,
+    sendMessage,
+    messages,
+    getMessages,
+    response,
+    setMessages,
+    setResponse,
+  } = useChatState();
   const [newPrompt, setNewPrompt] = useState("");
+  const [userQuestion, setUserQuestion] = useState("");
 
   const latestChatId =
     messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
@@ -17,6 +28,16 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
 
   const handleSendMessage = async (question: string) => {
     if (!question.trim()) return toast.error("Enter a message to proceed");
+    setUserQuestion(question);
+    setMessages(
+      (prev) =>
+        [
+          ...prev,
+          { role: "user", content: question, chatId: latestChatId },
+        ] as IChat[]
+    );
+    setResponse("");
+    setUserQuestion("");
     await sendMessage(question, latestChatId);
     setNewPrompt("");
   };
@@ -41,25 +62,38 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {messages.map((item) => (
-            <div key={item._id} className="flex flex-col gap-2">
-              {item.role === "assistant" ? (
-                <div className="flex justify-start">
-                  <div className="bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-white px-4 py-3 rounded-2xl max-w-[75%]">
-                    {item.content}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-end">
-                  <div className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 rounded-2xl max-w-[75%]">
-                    {item.content}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, idx) => (
+              <div
+                key={idx}
+                className="h-5 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            {messages.map((item) => (
+              <MessageBubble
+                key={item._id}
+                role={item.role}
+                content={item.content}
+              />
+            ))}
+
+            {userQuestion && (
+              <MessageBubble role="user" content={userQuestion} />
+            )}
+
+            {response && (
+              <MessageBubble
+                isStreaming={loading}
+                role="assistant"
+                content={response}
+              />
+            )}
+          </div>
+        )}
 
         <div className="border-t px-6 py-4 dark:border-gray-700 flex items-center gap-3 w-full">
           <div className="w-[90%]">
