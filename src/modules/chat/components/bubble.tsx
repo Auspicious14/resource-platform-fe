@@ -45,7 +45,7 @@ export const MessageBubble = ({
                 onClick={() => handleCopy(content)}
               />
             )}
-            <p>{copied ? "Copied" : "Copy"}</p>
+            <p className="text-sm">{copied ? "Copied" : "Copy"}</p>
           </div>
         </div>
       </div>

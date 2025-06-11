@@ -6,6 +6,7 @@ import { getCookie } from "@/helper";
 
 interface IChatState {
   loading: boolean;
+  responseLoading: boolean;
   response: string;
   messages: IChat[];
   setResponse: (responsne: string) => void;
@@ -31,6 +32,7 @@ interface IProps {
 export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   const [messages, setMessages] = useState<IChat[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [responseLoading, setResponseLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
 
   const getMessages = async (query?: any) => {
@@ -50,7 +52,7 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   };
 
   const sendMessage = async (question: string, chatId?: string) => {
-    setLoading(true);
+    setResponseLoading(true);
     const baseURL = process.env.NEXT_PUBLIC_API_URL;
     const token = getCookie("token") || localStorage.getItem("token");
     try {
@@ -77,17 +79,10 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
         setResponse(message);
         console.log(message, "message");
       }
-      // console.log(message, "message");
-
-      // const data = res?.data?.messages;
-      // if (data) {
-      //   setMessages((prev) => [...prev, ...data]);
-      // }
-      // return data;
     } catch (error: any) {
       toast.error(error);
     } finally {
-      setLoading(false);
+      setResponseLoading(false);
     }
   };
 
@@ -95,6 +90,7 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
     <ChatContext.Provider
       value={{
         loading,
+        responseLoading,
         response,
         messages,
         getMessages,

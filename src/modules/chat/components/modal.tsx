@@ -9,6 +9,7 @@ import { MessageBubble } from "./bubble";
 export const ChatModal = ({ onClose }: { onClose: () => void }) => {
   const {
     loading,
+    responseLoading,
     sendMessage,
     messages,
     getMessages,
@@ -63,11 +64,17 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-4 h-full px-6 py-4 flex-1">
             {[...Array(3)].map((_, idx) => (
               <div
                 key={idx}
                 className="h-5 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
+              />
+            ))}
+            {[...Array(3)].map((_, idx) => (
+              <div
+                key={idx}
+                className="h-5 w-1/2 flex justify-end bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
               />
             ))}
           </div>
@@ -87,7 +94,7 @@ export const ChatModal = ({ onClose }: { onClose: () => void }) => {
 
             {response && (
               <MessageBubble
-                isStreaming={loading}
+                isStreaming={responseLoading}
                 role="assistant"
                 content={response}
               />
