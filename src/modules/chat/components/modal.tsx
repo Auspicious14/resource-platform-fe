@@ -6,7 +6,15 @@ import { useChatState } from "../context";
 import { IChat } from "../model";
 import { MessageBubble } from "./bubble";
 
-export const ChatModal = ({ onClose }: { onClose: () => void }) => {
+export const ChatModal = ({
+  onClose,
+  isOpen,
+  projectId,
+}: {
+  onClose: () => void;
+  isOpen?: boolean;
+  projectId?: string;
+}) => {
   const {
     loading,
     responseLoading,

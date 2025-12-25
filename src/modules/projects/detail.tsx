@@ -1,171 +1,541 @@
-import Image from "next/image";
-import { IProject } from "./model";
+"use client";
+import React, { useState } from "react";
+import { IProject, IProjectMilestone } from "./model";
 import toast from "react-hot-toast";
-import { Button } from "@/components";
+import {
+  Button,
+  Card,
+  CardContent,
+  Badge,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  AxiosClient,
+} from "@/components";
+import {
+  Clock,
+  BookOpen,
+  Code2,
+  ExternalLink,
+  CheckCircle2,
+  ChevronRight,
+  PlayCircle,
+  FileText,
+  HelpCircle,
+  Trophy,
+  Users,
+  MessageSquare,
+  Share2,
+  Lock,
+  Zap,
+  Shield,
+  Dna,
+  Target,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { ChatModal } from "../chat/components/modal";
 
 export const ProjectDetailPage = ({ project }: { project: IProject }) => {
-  const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "milestones" | "resources" | "solutions"
+  >("overview");
+  const [difficultyMode, setDifficultyMode] = useState<
+    "GUIDED" | "STANDARD" | "HARDCORE"
+  >("STANDARD");
+  const [showChatModal, setShowChatModal] = useState(false);
+
+  const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const difficultyModes = [
+    {
+      id: "GUIDED",
+      label: "Guided",
+      icon: Zap,
+      color: "text-blue-500",
+      desc: "Detailed steps & unlimited AI hints",
+    },
+    {
+      id: "STANDARD",
+      label: "Standard",
+      icon: Shield,
+      color: "text-purple-500",
+      desc: "Milestones only, moderate AI help",
+    },
+    {
+      id: "HARDCORE",
+      label: "Hardcore",
+      icon: Dna,
+      color: "text-orange-500",
+      desc: "Minimal info, restricted AI hints",
+    },
+  ];
+
+  const handleStartProject = async () => {
+    try {
+      const response = await AxiosClient.post(`/projects/${project.id}/start`, {
+        difficultyModeChosen: difficultyMode,
+      });
+      if (response.data?.success) {
+        toast.success(`Started project in ${difficultyMode} mode!`);
+        // Refresh project data or redirect to dashboard
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to start project");
+    }
+  };
+
+  const handleCompleteMilestone = async (milestoneId: string) => {
+    try {
+      const response = await AxiosClient.post(
+        `/projects/${project.id}/milestones/${milestoneId}/complete`
+      );
+      if (response.data?.success) {
+        toast.success("Milestone completed!");
+        // Update local state or refetch project data
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Failed to complete milestone"
+      );
+    }
+  };
+
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
-      <nav className="mb-4 text-sm text-gray-500 flex items-center space-x-2">
-        <a href="/" className="hover:underline">
-          Home
-        </a>
-        <span>/</span>
-        <a href="/projects" className="hover:underline">
-          Projects
-        </a>
-        <span>/</span>
-        <span className="text-blue-900 font-semibold">{project.title}</span>
-      </nav>
-
-      <div className="w-full h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
-        <Image
-          src={project?.coverImage}
-          alt="Project Cover"
-          width={1200}
-          height={800}
-          quality={100}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-blue-900 mb-2">
-              {project.title}
-            </h1>
-
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span>
-                By{" "}
-                <span className="font-semibold text-blue-800">
-                  {project?.author}
-                </span>
-              </span>
-              <span>Last updated: {lastUpdated}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-lg">
-              {project.difficulty === "beginner" && "🟦"}
-              {project.difficulty === "intermediate" && "🟪"}
-              {project.difficulty === "advanced" && "🟧"}
-            </span>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${
-                project.difficulty === "beginner"
-                  ? "bg-blue-100 text-blue-800"
-                  : project.difficulty === "intermediate"
-                  ? "bg-purple-100 text-purple-800"
-                  : "bg-orange-100 text-orange-800"
-              }`}
+    <div className="min-h-screen bg-gray-50/30">
+      {/* Project Hero Header */}
+      <div className="bg-white border-b border-gray-100 pt-12 pb-8">
+        <div className="max-w-6xl mx-auto px-4">
+          <nav className="mb-8 text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+            <a
+              href="/projects"
+              className="hover:text-blue-600 transition-colors"
             >
-              {project.difficulty}
-            </span>
-          </div>
-        </div>
+              Projects
+            </a>
+            <ChevronRight size={12} />
+            <span className="text-gray-900">{project.title}</span>
+          </nav>
 
-        <p className="text-gray-600 mb-8 text-lg animate-fade-in">
-          {project.description}
-        </p>
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            <div className="flex-1">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge
+                  variant={
+                    project.difficultyLevel === "BEGINNER"
+                      ? "success"
+                      : project.difficultyLevel === "INTERMEDIATE"
+                      ? "default"
+                      : "destructive"
+                  }
+                >
+                  {project.difficultyLevel}
+                </Badge>
+                {project.techStack?.map((tech) => (
+                  <Badge key={tech} variant="outline" className="bg-gray-50">
+                    {tech}
+                  </Badge>
+                ))}
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+                {project.title}
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl">
+                {project.description}
+              </p>
 
-        {project.requirements && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-blue-800 mb-4">
-              Prerequisites
-            </h2>
-            <ul className="list-disc list-inside space-y-2">
-              {project.requirements.map((req: string) => (
-                <li key={req} className="text-gray-600 capitalize">
-                  {req}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div>
-          <h2 className="text-xl font-semibold text-blue-800 mb-4">
-            Recommended Resources
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {project.resources.map((resource: any) => (
-              <div
-                key={resource.title}
-                className="bg-blue-50 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 animate-fade-in"
-              >
-                <div className="flex items-center justify-between">
-                  <a
-                    href={resource.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-700 font-semibold hover:underline flex items-center gap-2"
-                  >
-                    {resource.type === "video" && (
-                      <span role="img" aria-label="video">
-                        🎬
-                      </span>
-                    )}
-                    {resource.type === "course" && (
-                      <span role="img" aria-label="course">
-                        📚
-                      </span>
-                    )}
-                    {resource.type === "article" && (
-                      <span role="img" aria-label="article">
-                        📝
-                      </span>
-                    )}
-                    {resource.title}
-                  </a>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-semibold capitalize ${
-                      resource.type === "video"
-                        ? "bg-red-100 text-red-700"
-                        : resource.type === "course"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-blue-100 text-blue-700"
-                    }`}
-                  >
-                    {resource.type}
+              <div className="flex flex-wrap gap-6 text-sm text-gray-500 font-medium border-t border-gray-50 pt-8">
+                <div className="flex items-center gap-2">
+                  <Users size={18} className="text-blue-500" />
+                  <span>
+                    {project.submissionCount || 0} developers building this
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm mt-2">
-                  {resource.description}
-                </p>
+                <div className="flex items-center gap-2">
+                  <Clock size={18} className="text-purple-500" />
+                  <span>Estimated: 12-15 hours</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BookOpen size={18} className="text-green-500" />
+                  <span>{project.milestones?.length || 0} Milestones</span>
+                </div>
               </div>
-            ))}
+            </div>
+
+            <Card className="w-full lg:w-80 shadow-xl border-blue-100 ring-4 ring-blue-50/50">
+              <div className="aspect-video relative">
+                <img
+                  src={
+                    project.thumbnailUrl ||
+                    `https://placehold.co/600x400/3b82f6/white?text=${project.title}`
+                  }
+                  className="w-full h-full object-cover rounded-t-xl"
+                  alt={project.title}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                  <div className="flex items-center gap-2 text-white">
+                    <img
+                      src={
+                        project.author?.avatarUrl ||
+                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Author"
+                      }
+                      className="w-6 h-6 rounded-full border border-white/20"
+                    />
+                    <span className="text-xs font-bold">
+                      By {project.author?.firstName || "System"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <CardContent className="p-6">
+                <div className="space-y-4 mb-6">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    Select Difficulty Mode
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    {difficultyModes.map((mode) => (
+                      <button
+                        key={mode.id}
+                        onClick={() => setDifficultyMode(mode.id as any)}
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                          difficultyMode === mode.id
+                            ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-100"
+                            : "border-gray-100 hover:border-gray-200 bg-white"
+                        }`}
+                      >
+                        <div
+                          className={`p-2 rounded-lg ${
+                            difficultyMode === mode.id
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-100 text-gray-400"
+                          }`}
+                        >
+                          <mode.icon size={16} />
+                        </div>
+                        <div>
+                          <div
+                            className={`text-sm font-bold ${
+                              difficultyMode === mode.id
+                                ? "text-blue-900"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            {mode.label}
+                          </div>
+                          <div className="text-[10px] text-gray-500">
+                            {mode.desc}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Button
+                  className="w-full h-12 text-lg font-bold"
+                  onClick={handleStartProject}
+                >
+                  Start Project
+                </Button>
+                <div className="mt-4 flex justify-center gap-4">
+                  <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                    <Share2 size={20} />
+                  </button>
+                  <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                    <MessageSquare size={20} />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
 
-        <div className="mt-10 flex flex-wrap gap-4">
-          {/* <a
-            href={project.repoUrl || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow font-semibold transition-colors"
-          >
-            Start Project
-          </a> */}
-          <Button
-            className="bg-gray-100 hover:bg-gray-200 text-blue-800 px-6 py-2 rounded shadow font-semibold transition-colors"
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              toast.success("Copied");
-            }}
-          >
-            Share
-          </Button>
+      {/* Tabs Section */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="flex gap-8 border-b border-gray-200 mb-8 overflow-x-auto scrollbar-hide">
+          {[
+            { id: "overview", label: "Overview", icon: FileText },
+            { id: "milestones", label: "Milestones", icon: Trophy },
+            { id: "resources", label: "Learning Resources", icon: BookOpen },
+            { id: "solutions", label: "Community Solutions", icon: Users },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 pb-4 text-sm font-bold transition-all whitespace-nowrap border-b-2 ${
+                activeTab === tab.id
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <tab.icon size={18} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex-1 min-w-0">
+            {activeTab === "overview" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-12"
+              >
+                <section>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Target className="text-blue-600" /> Project Objectives
+                  </h2>
+                  <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed">
+                    {project.content || "No detailed objectives provided."}
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Code2 className="text-purple-600" /> Technology
+                    Requirements
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {project.techStack?.map((tech) => (
+                      <Card
+                        key={tech}
+                        className="p-4 flex items-center gap-3 bg-white border-gray-100 shadow-none"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+                          <Code2 size={16} />
+                        </div>
+                        <span className="font-bold text-gray-700">{tech}</span>
+                      </Card>
+                    ))}
+                  </div>
+                </section>
+              </motion.div>
+            )}
+
+            {activeTab === "milestones" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="bg-blue-50 p-6 rounded-2xl mb-8 flex items-start gap-4">
+                  <div className="p-3 bg-blue-600 text-white rounded-xl">
+                    <Zap size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-blue-900 mb-1">
+                      Building in {difficultyMode} Mode
+                    </h3>
+                    <p className="text-sm text-blue-700 leading-relaxed">
+                      {
+                        difficultyModes.find((m) => m.id === difficultyMode)
+                          ?.desc
+                      }
+                      . Follow each milestone in order to build a solid
+                      foundation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative space-y-8 before:absolute before:left-8 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100">
+                  {project.milestones
+                    ?.sort((a, b) => a.orderIndex - b.orderIndex)
+                    .map((m, idx) => (
+                      <div key={m.id} className="relative pl-20 group">
+                        <div className="absolute left-0 top-0 w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center font-bold text-xl text-gray-400 group-hover:border-blue-500 group-hover:text-blue-600 transition-all shadow-sm">
+                          {idx + 1}
+                        </div>
+                        <Card className="border-gray-100 shadow-none hover:shadow-md transition-shadow">
+                          <CardHeader>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+                                  {m.title}
+                                </CardTitle>
+                                <CardDescription className="mt-2">
+                                  {m.description}
+                                </CardDescription>
+                              </div>
+                              <Lock size={18} className="text-gray-300" />
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex flex-wrap gap-4 mt-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2"
+                              >
+                                <HelpCircle size={14} /> Get Hint
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2"
+                                onClick={() => handleCompleteMilestone(m.id)}
+                              >
+                                <CheckCircle2 size={14} /> Mark Complete
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ))}
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === "resources" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {project.resources?.map((res) => (
+                  <Card
+                    key={res.id}
+                    className="group hover:border-blue-200 transition-colors"
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`p-3 rounded-xl ${
+                              res.type === "VIDEO"
+                                ? "bg-red-50 text-red-600"
+                                : res.type === "ARTICLE"
+                                ? "bg-blue-50 text-blue-600"
+                                : res.type === "COURSE"
+                                ? "bg-purple-50 text-purple-600"
+                                : "bg-green-50 text-green-600"
+                            }`}
+                          >
+                            {res.type === "VIDEO" ? (
+                              <PlayCircle size={24} />
+                            ) : res.type === "ARTICLE" ? (
+                              <FileText size={24} />
+                            ) : res.type === "COURSE" ? (
+                              <Trophy size={24} />
+                            ) : (
+                              <BookOpen size={24} />
+                            )}
+                          </div>
+                          <div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                              {res.type}
+                            </div>
+                            <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              {res.title}
+                            </h3>
+                          </div>
+                        </div>
+                        <a
+                          href={res.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-blue-600 hover:text-white transition-all"
+                        >
+                          <ExternalLink size={18} />
+                        </a>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </motion.div>
+            )}
+
+            {activeTab === "solutions" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200"
+              >
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400">
+                  <Users size={40} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Community Solutions
+                </h3>
+                <p className="text-gray-500 max-w-sm mx-auto mb-8">
+                  Be the first to submit a solution for this project! You'll
+                  earn double XP and a "Pioneer" badge.
+                </p>
+                <Button variant="outline" className="h-12 px-8">
+                  Submit Your Solution
+                </Button>
+              </motion.div>
+            )}
+          </div>
+
+          {/* AI Guide Sidebar */}
+          <div className="w-full lg:w-80">
+            <Card className="sticky top-8 bg-gray-900 border-none overflow-hidden shadow-2xl">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-600 text-white rounded-lg animate-pulse">
+                    <BrainCircuit size={20} />
+                  </div>
+                  <div>
+                    <CardTitle className="text-white text-lg">
+                      AI Guide
+                    </CardTitle>
+                    <CardDescription className="text-blue-400/80 font-medium">
+                      Ready to help you build
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  I understand this project's architecture and the current
+                  difficulty mode. Ask me anything!
+                </p>
+                <div className="space-y-2">
+                  {[
+                    "How do I get started?",
+                    "Explain the tech stack",
+                    "Need a hint for Milestone 1",
+                  ].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => setShowChatModal(true)}
+                      className="w-full text-left p-3 rounded-xl bg-gray-800 border border-gray-700 text-xs font-medium text-gray-300 hover:bg-gray-700 hover:border-blue-500/50 transition-all flex items-center justify-between group"
+                    >
+                      {q}
+                      <ChevronRight
+                        size={14}
+                        className="text-gray-500 group-hover:text-blue-400"
+                      />
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold h-11"
+                  onClick={() => setShowChatModal(true)}
+                >
+                  Open Chat Interface
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
+
+      {showChatModal && (
+        <ChatModal
+          isOpen={showChatModal}
+          onClose={() => setShowChatModal(false)}
+          projectId={project.id}
+        />
+      )}
     </div>
   );
 };
 
-// Optional: Add fade-in animation
-// In your global CSS (e.g., styles/globals.css), add:
-// .animate-fade-in { animation: fadeIn 0.7s ease; }
-// @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+// Add BrainCircuit to lucide imports if missing
+import { BrainCircuit } from "lucide-react";

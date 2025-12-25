@@ -1,15 +1,35 @@
-import React, { FC, ComponentProps, JSX } from "react";
+import React, { FC, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthContextProvider } from "../modules/auth/context";
 import { ProjectConextProvider } from "@/modules/projects/context";
 import { ChatContextProvider } from "@/modules/chat/context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-export const combineContext = (...components: FC[]): FC<any> => {
-  const CombinedComponent = components.reduce(
-    (AccumulatedComponents: any, CurrentComponent: any) => {
-      const WrapperComponent: FC<any> = ({
-        children,
-      }: ComponentProps<FC<any>>): JSX.Element => {
+const QueryProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+};
+
+export const combineContext = (...components: FC<any>[]): FC<any> => {
+  return components.reduce(
+    (AccumulatedComponents: FC<any>, CurrentComponent: FC<any>) => {
+      const WrapperComponent: FC<any> = ({ children }) => {
         return (
           <AccumulatedComponents>
             <CurrentComponent>{children}</CurrentComponent>
@@ -17,14 +37,13 @@ export const combineContext = (...components: FC[]): FC<any> => {
         );
       };
 
-      // Assign a displayName to the WrapperComponent
       WrapperComponent.displayName = `Combined(${
-        CurrentComponent.displayName || CurrentComponent.name || "Unknown"
+        CurrentComponent.displayName || CurrentComponent.name || "Component"
       })`;
 
       return WrapperComponent;
     },
-    ({ children }: any) => (
+    ({ children }: { children: React.ReactNode }) => (
       <>
         {children}
         <Toaster
@@ -39,9 +58,13 @@ export const combineContext = (...components: FC[]): FC<any> => {
       </>
     )
   );
-
-  return CombinedComponent;
 };
 
-const providers = [AuthContextProvider, ProjectConextProvider, ChatContextProvider] as any;
+const providers = [
+  QueryProvider,
+  AuthContextProvider,
+  ProjectConextProvider,
+  ChatContextProvider,
+];
+
 export const AppContextProvider = combineContext(...providers);

@@ -32,7 +32,7 @@ export default function RootLayout({
                 height={70}
               />
             </Link>
-            <div className="space-x-6">
+            <div className="space-x-6 flex items-center">
               <Link
                 href="/projects"
                 className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
@@ -40,10 +40,28 @@ export default function RootLayout({
                 Projects
               </Link>
               <Link
+                href="/dashboard"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/paths"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
+                Paths
+              </Link>
+              <Link
                 href="/chat"
                 className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
               >
                 AI Guide
+              </Link>
+              <Link
+                href="/profile"
+                className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+              >
+                Profile
               </Link>
             </div>
           </nav>
@@ -54,6 +72,18 @@ export default function RootLayout({
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="mb-4">© {fullYear} Devdrill. All rights reserved.</p>
           <div className="flex justify-center space-x-6">
+            <Link
+              href="/community/gallery"
+              className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+            >
+              Gallery
+            </Link>
+            <Link
+              href="/community/leaderboard"
+              className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
+            >
+              Leaderboard
+            </Link>
             <a
               href="#"
               className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
