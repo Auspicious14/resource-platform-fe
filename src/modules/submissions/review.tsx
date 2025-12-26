@@ -335,7 +335,9 @@ export const getProducts = async (req: Request, res: Response) => {
 
                 <div className="mt-8 pt-6 border-t">
                   <div className="flex gap-3">
-                    <TextInput 
+                    <TextInput
+                      ignoreFormik 
+                      name="comment"
                       placeholder="Add your feedback..." 
                       className="flex-1"
                       value={comment}
