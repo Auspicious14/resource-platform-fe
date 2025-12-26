@@ -71,7 +71,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       const data = response.data?.data;
       if (data) {
         setProjects((prev) =>
-          prev.map((project) => (project._id === id ? response.data : project))
+          prev.map((project) => (project.id === id ? response.data : project))
         );
         toast.success("Project updated successfully");
         return data;
@@ -139,7 +139,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       const response = await AxiosClient.delete(`/projects/${id}`);
       const message = response.data?.message;
       if (message) {
-        setProjects((prev) => prev.filter((project) => project._id !== id));
+        setProjects((prev) => prev.filter((project) => project.id !== id));
         toast.success(message || "Project deleted successfully");
         return true;
       }
