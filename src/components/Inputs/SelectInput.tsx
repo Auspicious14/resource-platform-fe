@@ -8,9 +8,10 @@ type Option = {
 type SelectInputProps = {
   label: string;
   options: Option[];
+  placeholder?: string;
 } & ComponentProps<"select">;
 
-export const SelectInput = ({ label, options, ...props }: SelectInputProps) => {
+export const SelectInput = ({ label, options, placeholder, ...props }: SelectInputProps) => {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
@@ -21,6 +22,11 @@ export const SelectInput = ({ label, options, ...props }: SelectInputProps) => {
           bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
           disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
+        {placeholder && (
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+        )}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
