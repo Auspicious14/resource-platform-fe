@@ -128,6 +128,12 @@ export const ProjectDetailPage = ({
     }
   };
 
+  const objectives =
+  project.learningObjectives?.filter(
+    (obj): obj is string => typeof obj === "string" && obj.trim().length > 0
+  ) ?? [];
+
+  
   return (
     <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 transition-colors duration-300">
       {/* Project Hero Header */}
@@ -289,9 +295,11 @@ export const ProjectDetailPage = ({
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Target className="text-blue-600" /> Project Objectives
                   </h2>
-                  <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed">
-                    {project.content || "No detailed objectives provided."}
-                  </div>
+                  <ul className="prose prose-blue max-w-none text-gray-600">
+  {objectives.map((obj, index) => (
+    <li key={`${obj}-${index}`}>{obj}</li>
+  ))}
+</ul>
                 </section>
 
                 <section>
