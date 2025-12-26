@@ -161,7 +161,7 @@ export const ProjectDetailPage = ({
                 >
                   {project.difficultyLevel}
                 </Badge>
-                {project.techStack?.map((tech) => (
+                {project.technologies?.map((tech) => (
                   <Badge
                     key={tech}
                     variant="outline"
@@ -200,7 +200,6 @@ export const ProjectDetailPage = ({
               <div className="aspect-video relative">
                 <img
                   src={
-                    project.thumbnailUrl ||
                     `https://placehold.co/600x400/3b82f6/white?text=${project.title}`
                   }
                   className="w-full h-full object-cover rounded-t-xl"
