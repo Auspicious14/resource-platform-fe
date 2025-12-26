@@ -6,7 +6,7 @@ type Option = {
 };
 
 type SelectInputProps = {
-  label: string;
+  label?: string;
   options: Option[];
   placeholder?: string;
 } & ComponentProps<"select">;
