@@ -209,13 +209,13 @@ export const ProjectDetailPage = ({
                   <div className="flex items-center gap-2 text-white">
                     <img
                       src={
-                        project.author?.avatarUrl ||
+                        project.createdBy?.avatarUrl ||
                         "https://api.dicebear.com/7.x/avataaars/svg?seed=Author"
                       }
                       className="w-6 h-6 rounded-full border border-white/20"
                     />
                     <span className="text-xs font-bold">
-                      By {project.author?.firstName || "System"}
+                      By {project.createdBy?.firstName || "System"}
                     </span>
                   </div>
                 </div>
