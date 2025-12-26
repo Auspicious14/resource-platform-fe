@@ -25,6 +25,7 @@ export interface IProject {
     }
   >;
   userProgress?: any;
+  createdBy?: any
 }
 
 export interface IProjectMilestone {
