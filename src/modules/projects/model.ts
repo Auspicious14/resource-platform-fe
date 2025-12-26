@@ -18,6 +18,14 @@ export interface IProject {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
+  progressByMode?: Record<
+    string,
+    {
+      status: string;
+      completedMilestones: string[];
+      userProjectId: string;
+    }
+  >;
 }
 
 export interface IProjectMilestone {

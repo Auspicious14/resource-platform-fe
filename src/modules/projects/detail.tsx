@@ -31,18 +31,35 @@ import {
   Shield,
   Dna,
   Target,
+  BrainCircuit,
+  Layout,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { ChatModal } from "../chat/components/modal";
+import {
+  DifficultySelector,
+  DifficultyMode,
+} from "./components/DifficultySelector";
+import { HintModal } from "./components/HintModal";
+import { GitHubIntegration } from "./components/GitHubIntegration";
+import { CodeEditor } from "./components/CodeEditor";
 
-export const ProjectDetailPage = ({ project }: { project: IProject }) => {
+export const ProjectDetailPage = ({
+  project: initialProject,
+}: {
+  project: IProject;
+}) => {
+  const [project, setProject] = useState<IProject>(initialProject);
   const [activeTab, setActiveTab] = useState<
     "overview" | "milestones" | "resources" | "solutions"
   >("overview");
-  const [difficultyMode, setDifficultyMode] = useState<
-    "GUIDED" | "STANDARD" | "HARDCORE"
-  >("STANDARD");
+  const [difficultyMode, setDifficultyMode] =
+    useState<DifficultyMode>("STANDARD");
   const [showChatModal, setShowChatModal] = useState(false);
+  const [showHintModal, setShowHintModal] = useState(false);
+  const [showCodeEditor, setShowCodeEditor] = useState(false);
+  const [selectedMilestoneForHint, setSelectedMilestoneForHint] =
+    useState<any>(null);
 
   const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US", {
     month: "short",
@@ -50,29 +67,27 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
     year: "numeric",
   });
 
-  const difficultyModes = [
-    {
-      id: "GUIDED",
-      label: "Guided",
-      icon: Zap,
-      color: "text-blue-500",
-      desc: "Detailed steps & unlimited AI hints",
-    },
-    {
-      id: "STANDARD",
-      label: "Standard",
-      icon: Shield,
-      color: "text-purple-500",
-      desc: "Milestones only, moderate AI help",
-    },
-    {
-      id: "HARDCORE",
-      label: "Hardcore",
-      icon: Dna,
-      color: "text-orange-500",
-      desc: "Minimal info, restricted AI hints",
-    },
-  ];
+  const progressByModeCalculated = React.useMemo(() => {
+    const progress: Record<string, number> = {
+      GUIDED: 0,
+      STANDARD: 0,
+      HARDCORE: 0,
+    };
+
+    if (project.progressByMode) {
+      Object.entries(project.progressByMode).forEach(([mode, data]) => {
+        if (project.milestones.length > 0) {
+          progress[mode] = Math.round(
+            (data.completedMilestones.length / project.milestones.length) * 100
+          );
+        }
+      });
+    }
+    return progress;
+  }, [project.progressByMode, project.milestones]);
+
+  const currentModeProgress = project.progressByMode?.[difficultyMode];
+  const isProjectStartedInCurrentMode = !!currentModeProgress;
 
   const handleStartProject = async () => {
     try {
@@ -81,7 +96,11 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
       });
       if (response.data?.success) {
         toast.success(`Started project in ${difficultyMode} mode!`);
-        // Refresh project data or redirect to dashboard
+        // Refresh project data
+        const updatedResponse = await AxiosClient.get(
+          `/projects/${project.id}`
+        );
+        setProject(updatedResponse.data?.data);
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to start project");
@@ -91,11 +110,16 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
   const handleCompleteMilestone = async (milestoneId: string) => {
     try {
       const response = await AxiosClient.post(
-        `/projects/${project.id}/milestones/${milestoneId}/complete`
+        `/projects/${project.id}/milestones/${milestoneId}/complete`,
+        { difficultyMode }
       );
       if (response.data?.success) {
         toast.success("Milestone completed!");
-        // Update local state or refetch project data
+        // Refresh project data
+        const updatedResponse = await AxiosClient.get(
+          `/projects/${project.id}`
+        );
+        setProject(updatedResponse.data?.data);
       }
     } catch (error: any) {
       toast.error(
@@ -192,52 +216,22 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
               </div>
               <CardContent className="p-6">
                 <div className="space-y-4 mb-6">
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
                     Select Difficulty Mode
                   </div>
-                  <div className="grid grid-cols-1 gap-2">
-                    {difficultyModes.map((mode) => (
-                      <button
-                        key={mode.id}
-                        onClick={() => setDifficultyMode(mode.id as any)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-                          difficultyMode === mode.id
-                            ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-100"
-                            : "border-gray-100 hover:border-gray-200 bg-white"
-                        }`}
-                      >
-                        <div
-                          className={`p-2 rounded-lg ${
-                            difficultyMode === mode.id
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-100 text-gray-400"
-                          }`}
-                        >
-                          <mode.icon size={16} />
-                        </div>
-                        <div>
-                          <div
-                            className={`text-sm font-bold ${
-                              difficultyMode === mode.id
-                                ? "text-blue-900"
-                                : "text-gray-700"
-                            }`}
-                          >
-                            {mode.label}
-                          </div>
-                          <div className="text-[10px] text-gray-500">
-                            {mode.desc}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  <DifficultySelector
+                    selectedMode={difficultyMode}
+                    onModeChange={setDifficultyMode}
+                    progressByMode={progressByModeCalculated as any}
+                  />
                 </div>
                 <Button
                   className="w-full h-12 text-lg font-bold"
                   onClick={handleStartProject}
                 >
-                  Start Project
+                  {isProjectStartedInCurrentMode
+                    ? "Resume Project"
+                    : "Start Project"}
                 </Button>
                 <div className="mt-4 flex justify-center gap-4">
                   <button className="text-gray-400 hover:text-blue-600 transition-colors">
@@ -322,6 +316,38 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Project Milestones
+                    </h2>
+                    <p className="text-gray-500 text-sm">
+                      Track your progress and complete the project step by step.
+                    </p>
+                  </div>
+                  <div className="flex-1 max-w-xs">
+                    <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                      <span>Progress</span>
+                      <span>{progressByModeCalculated[difficultyMode]}%</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${progressByModeCalculated[difficultyMode]}%`,
+                        }}
+                        className={`h-full ${
+                          difficultyMode === "GUIDED"
+                            ? "bg-blue-500"
+                            : difficultyMode === "STANDARD"
+                            ? "bg-purple-500"
+                            : "bg-orange-500"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-blue-50 p-6 rounded-2xl mb-8 flex items-start gap-4">
                   <div className="p-3 bg-blue-600 text-white rounded-xl">
                     <Zap size={24} />
@@ -331,10 +357,11 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
                       Building in {difficultyMode} Mode
                     </h3>
                     <p className="text-sm text-blue-700 leading-relaxed">
-                      {
-                        difficultyModes.find((m) => m.id === difficultyMode)
-                          ?.desc
-                      }
+                      {difficultyMode === "GUIDED"
+                        ? "Detailed steps & unlimited AI hints"
+                        : difficultyMode === "STANDARD"
+                        ? "Milestones only, moderate AI help"
+                        : "Minimal info, restricted AI hints"}
                       . Follow each milestone in order to build a solid
                       foundation.
                     </p>
@@ -343,48 +370,89 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
 
                 <div className="relative space-y-8 before:absolute before:left-8 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100">
                   {project.milestones
-                    ?.sort((a, b) => a.orderIndex - b.orderIndex)
-                    .map((m, idx) => (
-                      <div key={m.id} className="relative pl-20 group">
-                        <div className="absolute left-0 top-0 w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center font-bold text-xl text-gray-400 group-hover:border-blue-500 group-hover:text-blue-600 transition-all shadow-sm">
-                          {idx + 1}
-                        </div>
-                        <Card className="border-gray-100 shadow-none hover:shadow-md transition-shadow">
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                                  {m.title}
-                                </CardTitle>
-                                <CardDescription className="mt-2">
-                                  {m.description}
-                                </CardDescription>
+                    ?.sort((a, b) => a.milestoneNumber - b.milestoneNumber)
+                    .map((m, idx) => {
+                      const isCompleted =
+                        currentModeProgress?.completedMilestones?.includes(
+                          m.id
+                        );
+                      return (
+                        <div key={m.id} className="relative pl-20 group">
+                          <div
+                            className={`absolute left-0 top-0 w-16 h-16 rounded-2xl border-2 flex items-center justify-center font-bold text-xl transition-all shadow-sm ${
+                              isCompleted
+                                ? "bg-green-500 border-green-500 text-white"
+                                : "bg-white border-gray-100 text-gray-400 group-hover:border-blue-500 group-hover:text-blue-600"
+                            }`}
+                          >
+                            {isCompleted ? <CheckCircle2 size={32} /> : idx + 1}
+                          </div>
+                          <Card
+                            className={`transition-shadow ${
+                              isCompleted
+                                ? "border-green-100 bg-green-50/20"
+                                : "border-gray-100 shadow-none hover:shadow-md"
+                            }`}
+                          >
+                            <CardHeader>
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <CardTitle
+                                    className={`text-xl transition-colors ${
+                                      isCompleted
+                                        ? "text-green-900"
+                                        : "group-hover:text-blue-600"
+                                    }`}
+                                  >
+                                    {m.title}
+                                  </CardTitle>
+                                  <CardDescription className="mt-2">
+                                    {m.description}
+                                  </CardDescription>
+                                </div>
+                                {!isCompleted && (
+                                  <Lock size={18} className="text-gray-300" />
+                                )}
                               </div>
-                              <Lock size={18} className="text-gray-300" />
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="flex flex-wrap gap-4 mt-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-2"
-                              >
-                                <HelpCircle size={14} /> Get Hint
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-2"
-                                onClick={() => handleCompleteMilestone(m.id)}
-                              >
-                                <CheckCircle2 size={14} /> Mark Complete
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    ))}
+                            </CardHeader>
+                            <CardContent>
+                              <div className="flex flex-wrap gap-4 mt-4">
+                                {!isCompleted && (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="gap-2"
+                                      onClick={() => {
+                                        setSelectedMilestoneForHint(m);
+                                        setShowHintModal(true);
+                                      }}
+                                    >
+                                      <HelpCircle size={14} /> Get Hint
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="gap-2"
+                                      onClick={() =>
+                                        handleCompleteMilestone(m.id)
+                                      }
+                                    >
+                                      <CheckCircle2 size={14} /> Mark Complete
+                                    </Button>
+                                  </>
+                                )}
+                                {isCompleted && (
+                                  <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+                                    <CheckCircle2 size={16} /> Completed
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      );
+                    })}
                 </div>
               </motion.div>
             )}
@@ -472,7 +540,33 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
           </div>
 
           {/* AI Guide Sidebar */}
-          <div className="w-full lg:w-80">
+          <div className="w-full lg:w-80 space-y-6">
+            <Card className="bg-white border-blue-100 shadow-xl shadow-blue-500/5 overflow-hidden group">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
+                    <Layout size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Cloud Editor</h3>
+                    <p className="text-xs text-gray-500">
+                      Build in your browser
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed mb-6">
+                  Optional in-browser IDE with pre-configured test environment
+                  for this project.
+                </p>
+                <Button
+                  onClick={() => setShowCodeEditor(true)}
+                  className="w-full bg-gray-900 hover:bg-black text-white font-bold h-11 rounded-xl shadow-lg shadow-gray-200"
+                >
+                  Launch Web Editor
+                </Button>
+              </CardContent>
+            </Card>
+
             <Card className="sticky top-8 bg-gray-900 border-none overflow-hidden shadow-2xl">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
               <CardHeader className="pb-4">
@@ -522,6 +616,16 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
                 </Button>
               </CardContent>
             </Card>
+
+            <div className="mt-8">
+              <GitHubIntegration
+                projectId={project.id}
+                initialRepoUrl={project.repoUrl}
+                onRepoLinked={(url) => {
+                  setProject((prev) => ({ ...prev, repoUrl: url }));
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -533,9 +637,25 @@ export const ProjectDetailPage = ({ project }: { project: IProject }) => {
           projectId={project.id}
         />
       )}
+
+      {showHintModal && selectedMilestoneForHint && (
+        <HintModal
+          isOpen={showHintModal}
+          onClose={() => setShowHintModal(false)}
+          milestoneTitle={selectedMilestoneForHint.title}
+          hints={selectedMilestoneForHint.hints || []}
+          difficultyMode={difficultyMode}
+        />
+      )}
+
+      {showCodeEditor && (
+        <CodeEditor
+          isOpen={showCodeEditor}
+          onClose={() => setShowCodeEditor(false)}
+          title={project.title}
+          language="javascript"
+        />
+      )}
     </div>
   );
 };
-
-// Add BrainCircuit to lucide imports if missing
-import { BrainCircuit } from "lucide-react";

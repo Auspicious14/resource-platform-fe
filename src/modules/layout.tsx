@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
+import { NotificationProvider } from "./notifications/NotificationContext";
+import { NotificationBell } from "./notifications/NotificationBell";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -17,7 +19,7 @@ export default function RootLayout({
 }>) {
   const fullYear = new Date().getFullYear();
   return (
-    <>
+    <NotificationProvider>
       <div>
         <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
@@ -63,6 +65,7 @@ export default function RootLayout({
               >
                 Profile
               </Link>
+              <NotificationBell />
             </div>
           </nav>
         </header>
@@ -105,6 +108,6 @@ export default function RootLayout({
           </div>
         </div>
       </footer>
-    </>
+    </NotificationProvider>
   );
 }
