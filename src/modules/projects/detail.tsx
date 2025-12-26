@@ -308,7 +308,7 @@ export const ProjectDetailPage = ({
                     Requirements
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {project.techStack?.map((tech) => (
+                    {project.technologies?.map((tech) => (
                       <Card
                         key={tech}
                         className="p-4 flex items-center gap-3 bg-white border-gray-100 shadow-none"
@@ -477,7 +477,7 @@ export const ProjectDetailPage = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                {project.resources?.map((res) => (
+                {project.resourceLinks?.map((res) => (
                   <Card
                     key={res.id}
                     className="group hover:border-blue-200 transition-colors"
