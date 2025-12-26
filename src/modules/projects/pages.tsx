@@ -294,7 +294,6 @@ export const ProjectsPage = () => {
                           <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                             <img
                               src={
-                                project.thumbnailUrl ||
                                 `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`
                               }
                               className="w-full h-full object-cover transition-transform group-hover:scale-110"
@@ -316,7 +315,7 @@ export const ProjectsPage = () => {
                             <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                               <span className="flex items-center gap-1.5">
                                 <Clock size={12} className="text-blue-500" />
-                                {project.timeEstimate || "2-4h"}
+                                {project.estimatedTime || "2-4h"}
                               </span>
                               <span className="flex items-center gap-1.5">
                                 <Users size={12} className="text-purple-500" />
