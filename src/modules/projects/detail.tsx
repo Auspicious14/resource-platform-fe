@@ -634,9 +634,9 @@ export const ProjectDetailPage = ({
             <div className="mt-8">
               <GitHubIntegration
                 projectId={project.id}
-                initialRepoUrl={project.repoUrl}
+                initialRepoUrl={project.starterRepoUrl}
                 onRepoLinked={(url) => {
-                  setProject((prev) => ({ ...prev, repoUrl: url }));
+                  setProject((prev) => ({ ...prev, starterRepoUrl: url }));
                 }}
               />
             </div>
