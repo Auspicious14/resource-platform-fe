@@ -4,6 +4,7 @@ import Link from "next/link";
 import { IProject } from "./model";
 import { useProjectState } from "./context";
 import { useRouter } from "next/router";
+import { ProjectCard } from "@/components/Display/ProjectCard";
 import {
   Button,
   Card,
@@ -25,6 +26,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DifficultyBadge } from "@/components/Display/DifficultyBadge";
 
 const difficultyOptions = [
   { label: "All Difficulties", value: "" },
@@ -82,48 +84,62 @@ export const ProjectsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 pb-20 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 py-12 mb-8">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 py-16 mb-8">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
+                <Layers size={12} />
+                Explore Projects
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
                 Project Library
               </h1>
-              <p className="text-gray-500 mt-2">
-                Choose a project and start building your portfolio today.
+              <p className="text-lg text-gray-500 dark:text-gray-400 mt-4 max-w-2xl leading-relaxed">
+                Master modern technologies by building real-world projects. From
+                beginners to advanced developers, we have something for
+                everyone.
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex border border-gray-200 rounded-lg p-1 bg-gray-50">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex border border-gray-200 dark:border-gray-800 rounded-2xl p-1.5 bg-gray-50 dark:bg-gray-800 shadow-inner">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-all ${
+                  className={`p-2.5 rounded-xl transition-all ${
                     viewMode === "grid"
-                      ? "bg-white shadow-sm text-blue-600"
-                      : "text-gray-400"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                   }`}
+                  aria-label="Grid view"
                 >
                   <LayoutGrid size={20} />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-all ${
+                  className={`p-2.5 rounded-xl transition-all ${
                     viewMode === "list"
-                      ? "bg-white shadow-sm text-blue-600"
-                      : "text-gray-400"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                   }`}
+                  aria-label="List view"
                 >
                   <ListIcon size={20} />
                 </button>
               </div>
               <Button
-                variant="outline"
-                className="md:hidden"
+                variant={isFilterVisible ? "secondary" : "outline"}
                 onClick={() => setIsFilterVisible(!isFilterVisible)}
+                className="h-12 px-6 rounded-2xl border-2 font-bold dark:border-gray-800"
               >
-                <Filter size={20} />
+                <Filter size={18} className="mr-2" />
+                Filters
+                {Object.values(filters).filter(Boolean).length > 1 && (
+                  <span className="ml-2 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">
+                    {Object.values(filters).filter(Boolean).length - 1}
+                  </span>
+                )}
               </Button>
             </div>
           </div>
@@ -268,105 +284,53 @@ export const ProjectsPage = () => {
                     transition={{ delay: index * 0.05 }}
                   >
                     {viewMode === "grid" ? (
-                      <Card
-                        className="h-full flex flex-col group cursor-pointer"
-                        onClick={() => router.push(`/projects/${project.id}`)}
-                      >
-                        <div className="aspect-video relative overflow-hidden bg-gray-100 rounded-t-xl">
-                          <img
-                            src={
-                              project.thumbnailUrl ||
-                              `https://placehold.co/600x400/3b82f6/white?text=${project.title}`
-                            }
-                            className="object-cover w-full h-full transition-transform group-hover:scale-105"
-                            alt={project.title}
-                          />
-                          <div className="absolute top-3 left-3">
-                            <Badge
-                              variant={
-                                project.difficultyLevel === "BEGINNER"
-                                  ? "success"
-                                  : project.difficultyLevel === "INTERMEDIATE"
-                                  ? "default"
-                                  : "destructive"
-                              }
-                              className="capitalize"
-                            >
-                              {project.difficultyLevel.toLowerCase()}
-                            </Badge>
-                          </div>
-                        </div>
-                        <CardContent className="p-5 flex-1 flex flex-col">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                            {project.title}
-                          </h3>
-                          <p className="text-gray-500 text-sm line-clamp-2 mb-4">
-                            {project.description}
-                          </p>
-                          <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50">
-                            <div className="flex items-center gap-4 text-xs text-gray-400 font-medium">
-                              <span className="flex items-center gap-1.5">
-                                <Code2 size={14} className="text-blue-500" />
-                                {project.techStack?.[0] || "General"}
-                              </span>
-                              <span className="flex items-center gap-1.5">
-                                <Users size={14} className="text-purple-500" />
-                                {project.submissionCount || 0}
-                              </span>
-                            </div>
-                            <Button
-                              variant="transparent"
-                              size="sm"
-                              className="p-0 text-blue-600 font-bold group-hover:translate-x-1 transition-transform"
-                            >
-                              Start Building <ChevronRight size={16} />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <ProjectCard project={project} />
                     ) : (
                       <Card
-                        className="group cursor-pointer hover:border-blue-200"
+                        className="group cursor-pointer border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 shadow-sm"
                         onClick={() => router.push(`/projects/${project.id}`)}
                       >
                         <CardContent className="p-4 flex items-center gap-6">
-                          <div className="w-24 h-24 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                          <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                             <img
                               src={
                                 project.thumbnailUrl ||
                                 `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`
                               }
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover transition-transform group-hover:scale-110"
                               alt={project.title}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-bold text-lg text-gray-900 truncate group-hover:text-blue-600">
+                              <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                 {project.title}
                               </h3>
-                              <Badge
-                                variant="outline"
-                                className="text-[10px] uppercase"
-                              >
-                                {project.difficultyLevel.toLowerCase()}
-                              </Badge>
+                              <DifficultyBadge
+                                level={project.difficultyLevel}
+                              />
                             </div>
-                            <p className="text-gray-500 text-sm truncate mb-2">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-1 mb-3">
                               {project.description}
                             </p>
-                            <div className="flex items-center gap-4 text-xs text-gray-400 font-medium">
-                              <span className="flex items-center gap-1">
-                                <Code2 size={14} />{" "}
-                                {project.techStack?.join(", ") || "No tags"}
+                            <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                              <span className="flex items-center gap-1.5">
+                                <Clock size={12} className="text-blue-500" />
+                                {project.timeEstimate || "2-4h"}
                               </span>
-                              <span className="flex items-center gap-1">
-                                <Users size={14} />{" "}
-                                {project.submissionCount || 0} solutions
+                              <span className="flex items-center gap-1.5">
+                                <Users size={12} className="text-purple-500" />
+                                {project.submissionCount || 0} builders
                               </span>
                             </div>
                           </div>
-                          <ChevronRight className="text-gray-300 group-hover:text-blue-600 transition-colors" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="hidden sm:flex font-bold dark:border-gray-700 dark:text-gray-300"
+                          >
+                            View Project
+                          </Button>
                         </CardContent>
                       </Card>
                     )}
@@ -389,7 +353,12 @@ export const ProjectsPage = () => {
                   variant="outline"
                   className="mt-6"
                   onClick={() =>
-                    setFilters({ difficulty: "", title: "", sort: "newest", category: "" })
+                    setFilters({
+                      difficulty: "",
+                      title: "",
+                      sort: "newest",
+                      category: "",
+                    })
                   }
                 >
                   Clear all filters

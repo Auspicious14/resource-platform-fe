@@ -129,19 +129,21 @@ export const ProjectDetailPage = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 transition-colors duration-300">
       {/* Project Hero Header */}
-      <div className="bg-white border-b border-gray-100 pt-12 pb-8">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 pt-12 pb-8">
         <div className="max-w-6xl mx-auto px-4">
-          <nav className="mb-8 text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+          <nav className="mb-8 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
             <a
               href="/projects"
-              className="hover:text-blue-600 transition-colors"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               Projects
             </a>
             <ChevronRight size={12} />
-            <span className="text-gray-900">{project.title}</span>
+            <span className="text-gray-900 dark:text-gray-100">
+              {project.title}
+            </span>
           </nav>
 
           <div className="flex flex-col lg:flex-row gap-12 items-start">
@@ -155,23 +157,28 @@ export const ProjectDetailPage = ({
                       ? "default"
                       : "destructive"
                   }
+                  className="dark:opacity-80"
                 >
                   {project.difficultyLevel}
                 </Badge>
                 {project.techStack?.map((tech) => (
-                  <Badge key={tech} variant="outline" className="bg-gray-50">
+                  <Badge
+                    key={tech}
+                    variant="outline"
+                    className="bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+                  >
                     {tech}
                   </Badge>
                 ))}
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
                 {project.title}
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl">
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-3xl">
                 {project.description}
               </p>
 
-              <div className="flex flex-wrap gap-6 text-sm text-gray-500 font-medium border-t border-gray-50 pt-8">
+              <div className="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400 font-medium border-t border-gray-50 dark:border-gray-800 pt-8">
                 <div className="flex items-center gap-2">
                   <Users size={18} className="text-blue-500" />
                   <span>
@@ -189,7 +196,7 @@ export const ProjectDetailPage = ({
               </div>
             </div>
 
-            <Card className="w-full lg:w-80 shadow-xl border-blue-100 ring-4 ring-blue-50/50">
+            <Card className="w-full lg:w-80 shadow-xl border-blue-100 dark:border-gray-800 ring-4 ring-blue-50/50 dark:ring-gray-800/50">
               <div className="aspect-video relative">
                 <img
                   src={
@@ -216,7 +223,7 @@ export const ProjectDetailPage = ({
               </div>
               <CardContent className="p-6">
                 <div className="space-y-4 mb-6">
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                  <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
                     Select Difficulty Mode
                   </div>
                   <DifficultySelector
@@ -226,7 +233,7 @@ export const ProjectDetailPage = ({
                   />
                 </div>
                 <Button
-                  className="w-full h-12 text-lg font-bold"
+                  className="w-full h-12 text-lg font-bold bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg shadow-blue-200 dark:shadow-blue-900/20"
                   onClick={handleStartProject}
                 >
                   {isProjectStartedInCurrentMode
@@ -234,10 +241,10 @@ export const ProjectDetailPage = ({
                     : "Start Project"}
                 </Button>
                 <div className="mt-4 flex justify-center gap-4">
-                  <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                  <button className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     <Share2 size={20} />
                   </button>
-                  <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                  <button className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     <MessageSquare size={20} />
                   </button>
                 </div>

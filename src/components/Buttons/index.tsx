@@ -23,11 +23,11 @@ export const Button: FC<IButtonProps> = ({
   ...props
 }) => {
   const variantStyles = {
-    primary: "bg-primary text-white hover:bg-primary/90",
-    secondary: "bg-secondary text-white hover:bg-secondary/90",
-    outline: "border-2 border-primary text-primary hover:bg-primary/10",
-    transparent: "border-none text-primary hover:bg-primary/10",
-    danger: "border-2 border-red-500 text-red-600 hover:bg-red-50",
+    primary: "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500",
+    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700",
+    outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-900/20",
+    transparent: "border-none text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20",
+    danger: "border-2 border-red-500 text-red-600 hover:bg-red-50 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-900/20",
   };
 
   const sizeStyles = {
