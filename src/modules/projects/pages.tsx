@@ -50,7 +50,7 @@ const categoryOptions = [
 ];
 
 export const ProjectsPage = () => {
-  const { projects } = useProjectState();
+  const { projects, getProjects, isLoading, error } = useProjectState();
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -62,7 +62,9 @@ export const ProjectsPage = () => {
     sort: (router.query.sort as string) || "newest",
   });
 
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    getProjects();
+  }, []);
 
   useEffect(() => {
     if (router.isReady) {
@@ -268,7 +270,23 @@ export const ProjectsPage = () => {
 
           {/* Main Content - Project Grid */}
           <div className="flex-1">
-            {projects && projects.length > 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="h-[400px] rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-20 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/20">
+                <p className="text-red-600 dark:text-red-400 font-bold">{error}</p>
+                <Button variant="outline" className="mt-4" onClick={() => getProjects()}>
+                  Try Again
+                </Button>
+              </div>
+            ) : projects && projects.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
