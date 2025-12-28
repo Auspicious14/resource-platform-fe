@@ -14,6 +14,12 @@ interface IProjectState {
   createProject: (values: any) => Promise<any>;
   updateProject: (id: string, values: any) => Promise<any>;
   deleteProject: (id: string) => Promise<boolean>;
+  startProject: (projectId: string, difficultyMode: string) => Promise<any>;
+  completeMilestone: (
+    projectId: string,
+    milestoneId: string,
+    difficultyMode: string
+  ) => Promise<any>;
   getProjects: () => Promise<void>;
   getFeaturedProjects: () => Promise<void>;
   getOneProject: (id: string) => Promise<any>;
@@ -152,6 +158,57 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       setIsLoading(false);
     }
   };
+
+  const startProject = async (projectId: string, difficultyMode: string) => {
+    setIsLoading(true);
+    try {
+      const response = await AxiosClient.post(`/projects/${projectId}/start`, {
+        difficultyModeChosen: difficultyMode,
+      });
+      const data = response.data;
+      if (data.success) {
+        toast.success(`Started project in ${difficultyMode} mode!`);
+        // Optionally refresh the current project if it's the one we just started
+        if (project && project.id === projectId) {
+          await getOneProject(projectId);
+        }
+        return data;
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to start project");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const completeMilestone = async (
+    projectId: string,
+    milestoneId: string,
+    difficultyMode: string
+  ) => {
+    // setIsLoading(true); // Maybe avoid full page loading state for milestone completion?
+    try {
+      const response = await AxiosClient.post(
+        `/projects/${projectId}/milestones/${milestoneId}/complete`,
+        { difficultyMode }
+      );
+      if (response.data?.success) {
+        toast.success("Milestone completed!");
+        if (project && project.id === projectId) {
+          await getOneProject(projectId);
+        }
+        return response.data;
+      }
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || "Failed to complete milestone"
+      );
+      throw err;
+    } finally {
+      // setIsLoading(false);
+    }
+  };
   return (
     <ProjectContext.Provider
       value={{
@@ -165,6 +222,8 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         getProjects,
         getOneProject,
         deleteProject,
+        startProject,
+        completeMilestone,
         setProjects,
         setFeaturedProjects,
         getFeaturedProjects,

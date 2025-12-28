@@ -10,8 +10,8 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  AxiosClient,
 } from "@/components";
+import { useProjectState } from "./context";
 import {
   Clock,
   BookOpen,
@@ -60,6 +60,7 @@ export const ProjectDetailPage = ({
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [selectedMilestoneForHint, setSelectedMilestoneForHint] =
     useState<any>(null);
+  const { startProject, completeMilestone, getOneProject } = useProjectState();
 
   const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US", {
     month: "short",
@@ -91,49 +92,30 @@ export const ProjectDetailPage = ({
 
   const handleStartProject = async () => {
     try {
-      const response = await AxiosClient.post(`/projects/${project.id}/start`, {
-        difficultyModeChosen: difficultyMode,
-      });
-      if (response.data?.success) {
-        toast.success(`Started project in ${difficultyMode} mode!`);
-        // Refresh project data
-        const updatedResponse = await AxiosClient.get(
-          `/projects/${project.id}`
-        );
-        setProject(updatedResponse.data?.data);
-      }
+      await startProject(project.id, difficultyMode);
+      // Refresh local state using context's getOneProject to ensure we stay in sync
+      const updated = await getOneProject(project.id);
+      if (updated) setProject(updated);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to start project");
+      // Error handled in context
     }
   };
 
   const handleCompleteMilestone = async (milestoneId: string) => {
     try {
-      const response = await AxiosClient.post(
-        `/projects/${project.id}/milestones/${milestoneId}/complete`,
-        { difficultyMode }
-      );
-      if (response.data?.success) {
-        toast.success("Milestone completed!");
-        // Refresh project data
-        const updatedResponse = await AxiosClient.get(
-          `/projects/${project.id}`
-        );
-        setProject(updatedResponse.data?.data);
-      }
+      await completeMilestone(project.id, milestoneId, difficultyMode);
+      const updated = await getOneProject(project.id);
+      if (updated) setProject(updated);
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Failed to complete milestone"
-      );
+      // Error handled in context
     }
   };
 
   const objectives =
-  project.learningObjectives?.filter(
-    (obj): obj is string => typeof obj === "string" && obj.trim().length > 0
-  ) ?? [];
+    project.learningObjectives?.filter(
+      (obj): obj is string => typeof obj === "string" && obj.trim().length > 0
+    ) ?? [];
 
-  
   return (
     <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 transition-colors duration-300">
       {/* Project Hero Header */}
@@ -205,9 +187,7 @@ export const ProjectDetailPage = ({
             <Card className="w-full lg:w-80 shadow-xl border-blue-100 dark:border-gray-800 ring-4 ring-blue-50/50 dark:ring-gray-800/50">
               <div className="aspect-video relative">
                 <img
-                  src={
-                    `https://placehold.co/600x400/3b82f6/white?text=${project.title}`
-                  }
+                  src={`https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
                   className="w-full h-full object-cover rounded-t-xl"
                   alt={project.title}
                 />
@@ -296,10 +276,10 @@ export const ProjectDetailPage = ({
                     <Target className="text-blue-600" /> Project Objectives
                   </h2>
                   <ul className="prose prose-blue max-w-none text-gray-600">
-  {objectives.map((obj, index) => (
-    <li key={`${obj}-${index}`}>{obj}</li>
-  ))}
-</ul>
+                    {objectives.map((obj, index) => (
+                      <li key={`${obj}-${index}`}>{obj}</li>
+                    ))}
+                  </ul>
                 </section>
 
                 <section>

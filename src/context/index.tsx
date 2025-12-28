@@ -60,11 +60,16 @@ export const combineContext = (...components: FC<any>[]): FC<any> => {
   );
 };
 
+import { SubmissionProvider } from "@/modules/submissions/context";
+import { CommunityProvider } from "@/modules/community/context";
+
 const providers = [
   QueryProvider,
   AuthContextProvider,
   ProjectConextProvider,
   ChatContextProvider,
+  SubmissionProvider,
+  CommunityProvider,
 ];
 
 export const AppContextProvider = combineContext(...providers);
