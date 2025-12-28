@@ -179,7 +179,7 @@ export default function RootLayout({
               <p className="mb-4">
                 © {fullYear} Devdrill. All rights reserved.
               </p>
-              <div className="flex justify-center space-x-6">
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6">
                 <Link
                   href="/projects"
                   className="hover:text-blue-600 transition-colors"
