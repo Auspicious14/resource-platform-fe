@@ -2,6 +2,7 @@
 import { Formik } from "formik";
 import { useAuth } from "../context";
 import { Button, TextInput } from "../../../components";
+import OAuthButtons from "../oauth-buttons";
 import Link from "next/link";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -21,6 +22,9 @@ export default function SignInPage() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
           Welcome Back
         </h1>
+
+        <OAuthButtons />
+
         <Formik
           initialValues={{
             email: "",

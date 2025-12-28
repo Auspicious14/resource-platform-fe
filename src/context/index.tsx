@@ -3,6 +3,8 @@ import { Toaster } from "react-hot-toast";
 import { AuthContextProvider } from "../modules/auth/context";
 import { ProjectConextProvider } from "@/modules/projects/context";
 import { ChatContextProvider } from "@/modules/chat/context";
+import { SocialProvider } from "@/modules/social/context";
+import { EventProvider } from "@/modules/events/context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -62,6 +64,7 @@ export const combineContext = (...components: FC<any>[]): FC<any> => {
 
 import { SubmissionProvider } from "@/modules/submissions/context";
 import { CommunityProvider } from "@/modules/community/context";
+import { NotificationProvider } from "@/modules/notifications/context";
 
 const providers = [
   QueryProvider,
@@ -70,6 +73,9 @@ const providers = [
   ChatContextProvider,
   SubmissionProvider,
   CommunityProvider,
+  EventProvider,
+  NotificationProvider,
+  SocialProvider,
 ];
 
 export const AppContextProvider = combineContext(...providers);

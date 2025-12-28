@@ -2,6 +2,7 @@
 import { Formik } from "formik";
 import { useAuth } from "../context";
 import { Button, SelectInput, TextInput } from "../../../components";
+import OAuthButtons from "../oauth-buttons";
 import Link from "next/link";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -20,8 +21,8 @@ export default function SignUpPage() {
     email: Yup.string().email("Invalid email").required("Required"),
     password: Yup.string().min(8, "Too short!").required("Required"),
     level: Yup.string()
-    .oneOf(["beginner", "intermediate", "advanced"])
-    .required("Experience level is required"),
+      .oneOf(["beginner", "intermediate", "advanced"])
+      .required("Experience level is required"),
   });
 
   return (
@@ -30,6 +31,9 @@ export default function SignUpPage() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
           Create Account
         </h1>
+
+        <OAuthButtons />
+
         <Formik
           initialValues={{
             firstName: "",
