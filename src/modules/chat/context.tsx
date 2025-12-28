@@ -11,8 +11,8 @@ interface IChatState {
   messages: IChat[];
   setResponse: (responsne: string) => void;
   setMessages: React.Dispatch<React.SetStateAction<IChat[]>>;
-  getMessages: (query?: any) => Promise<void>;
-  sendMessage: (question: string, chatId?: string) => Promise<any>;
+  getMessages: (projectId?: string) => Promise<void>;
+  sendMessage: (message: string, projectId?: string) => Promise<any>;
 }
 
 const ChatContext = React.createContext<IChatState | undefined>(undefined);
@@ -35,10 +35,10 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   const [responseLoading, setResponseLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
 
-  const getMessages = async (query?: any) => {
+  const getMessages = async (projectId?: string) => {
     setLoading(true);
     try {
-      const res = await AxiosClient.get(`/chats`);
+      const res = await AxiosClient.get(`/ai/chat/history/${projectId}`);
       const data = await res?.data?.data;
       if (data) {
         setMessages(data);
@@ -51,33 +51,33 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
     }
   };
 
-  const sendMessage = async (question: string, chatId?: string) => {
+  const sendMessage = async (message: string, projectId?: string) => {
     setResponseLoading(true);
     const baseURL = process.env.NEXT_PUBLIC_API_URL;
     const token = getCookie("token") || localStorage.getItem("token");
     try {
-      const res = await fetch(`${baseURL}/chat-with-ai`, {
+      const res = await fetch(`${baseURL}/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ question, chatId }),
+        body: JSON.stringify({ message, projectId }),
       });
       // console.log(res.data, "responseee");
       const decoder = new TextDecoder();
       const reader: any = res.body?.getReader();
       let done = false;
-      let message = "";
+      let responseText = "";
 
       while (!done) {
         const { value, done: doneReading } = await reader?.read();
         done = doneReading;
         if (done) break;
         const chunkValue = decoder.decode(value, { stream: true });
-        message += chunkValue;
-        setResponse(message);
-        console.log(message, "message");
+        responseText += chunkValue;
+        setResponse(responseText);
+        console.log(responseText, "message");
       }
     } catch (error: any) {
       toast.error(error);
