@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Badge,
-  AxiosClient,
   CardHeader,
   CardTitle,
 } from "@/components";
@@ -23,37 +22,21 @@ import {
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
+import { useCommunity } from "./context";
+
 export const LeaderboardPage = () => {
   const router = useRouter();
   const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "all-time">(
     "monthly"
   );
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { leaderboardUsers, loading, getLeaderboard } = useCommunity();
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        setLoading(true);
-        const response = await AxiosClient.get(
-          `/gamification/leaderboard?timeframe=${timeframe}`
-        );
-        const data = response.data?.data;
-        if (data) {
-          setUsers(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch leaderboard", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
+    getLeaderboard(timeframe);
   }, [timeframe]);
 
-  const topThree = users.slice(0, 3);
-  const others = users.slice(3);
+  const topThree = leaderboardUsers.slice(0, 3);
+  const others = leaderboardUsers.slice(3);
 
   if (loading)
     return <div className="p-12 text-center">Loading leaderboard...</div>;
@@ -282,7 +265,7 @@ export const LeaderboardPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {users.map((user) => (
+                  {leaderboardUsers.map((user) => (
                     <tr
                       key={user.id}
                       className="hover:bg-gray-50/50 transition-colors group cursor-pointer"

@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Badge,
-  AxiosClient,
   CardHeader,
   CardTitle,
   TextInput,
@@ -29,41 +28,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "../auth/context";
 
+import { useSubmission } from "./context";
+
 export const SubmissionReviewPage = () => {
   const params = useParams();
   const submissionId = params?.id as string;
   const { user } = useAuth();
   const router = useRouter();
+  const { submission, loading, getSubmission, postComment } = useSubmission();
 
-  const [submission, setSubmission] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
 
   useEffect(() => {
-    const fetchSubmission = async () => {
-      try {
-        setLoading(true);
-        // Simulate fetching submission data
-        const res = await AxiosClient.get(`/code-review/${submissionId}`);
-        const data = res.data?.data;
-        if (data) {
-          setSubmission(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch submission", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (submissionId) fetchSubmission();
+    if (submissionId) getSubmission(submissionId);
   }, [submissionId]);
 
   const handleSubmitComment = async () => {
     if (!comment.trim()) return;
-    // API call to post comment
+    await postComment(submissionId, comment);
     setComment("");
   };
 

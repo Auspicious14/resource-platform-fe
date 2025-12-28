@@ -220,7 +220,7 @@ export default function RootLayout({
                   onClick={() => setIsOnboardingOpen(true)}
                   className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
                 >
-                  Redo Onboarding
+                  Onboarding
                 </button>
               </div>
             </div>
