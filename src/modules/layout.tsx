@@ -181,6 +181,30 @@ export default function RootLayout({
               </p>
               <div className="flex justify-center space-x-6">
                 <Link
+                  href="/projects"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  Projects
+                </Link>
+                <Link
+                  href="/paths"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  Paths
+                </Link>
+                <Link
+                  href="/community"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  Community
+                </Link>
+                <Link
+                  href="/about"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  About
+                </Link>
+                <Link
                   href="/community/gallery"
                   className="hover:text-blue-200 transition-colors duration-200 font-medium hover:underline underline-offset-4"
                 >

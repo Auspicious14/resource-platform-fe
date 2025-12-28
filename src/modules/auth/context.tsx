@@ -63,7 +63,7 @@ export const AuthContextProvider = ({
 
   const signUp = useCallback(
     async (values: any, actions: FormikHelpers<any>) => {
-      await handleAuthRequest("/signup", values, "signup");
+      await handleAuthRequest("/auth/register", values, "signup");
       actions.setSubmitting(false);
     },
     []
@@ -71,7 +71,7 @@ export const AuthContextProvider = ({
 
   const signIn = useCallback(
     async (values: any, actions: FormikHelpers<any>) => {
-      await handleAuthRequest("/login", values, "signin");
+      await handleAuthRequest("/auth/login", values, "signin");
       actions.setSubmitting(false);
     },
     []
@@ -80,7 +80,7 @@ export const AuthContextProvider = ({
   const forgotPassword = useCallback(async (email: string) => {
     setIsLoading(true);
     try {
-      await AxiosClient.post("/forgetPassword", { email });
+      await AxiosClient.post("/auth/forgetPassword", { email });
       toast.success("Password reset email sent");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to send reset email");

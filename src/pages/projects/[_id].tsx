@@ -19,15 +19,15 @@ export default function ProjectDetail({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { req, params } = context;
-  const token = req.cookies?.token;
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
-    };
-  }
+  // const token = req.cookies?.token;
+  // if (!token) {
+  //   return {
+  //     redirect: {
+  //       destination: "/signin",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 
   const response = await AxiosClient.get(`/projects/${params?._id}`);
   const data = response.data?.data;

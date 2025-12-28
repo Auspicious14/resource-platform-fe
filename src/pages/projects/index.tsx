@@ -19,15 +19,15 @@ export default Projects;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { req, res, query } = context;
-  const token = req.cookies?.token;
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
-    };
-  }
+  // const token = req.cookies?.token;
+  // if (!token) {
+  //   return {
+  //     redirect: {
+  //       destination: "/signin",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
   const params = new URLSearchParams();
   if (query.difficulty) params.append("difficulty", String(query.difficulty));
   if (query.title) params.append("title", String(query.title));
@@ -37,7 +37,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     params.append("requirements", String(query.requirements));
   const url = `/projects${params.toString() ? `?${params.toString()}` : ""}`;
   const response = await AxiosClient.get(url, {
-    headers: { Authorization: `Bearer ${token}` },
+    // headers: { Authorization: `Bearer ${token}` },
   });
   const data = response.data?.data;
 

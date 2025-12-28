@@ -326,7 +326,7 @@ export const HomePage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-white border-t border-gray-100">
+      {/* <footer className="py-12 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2 font-bold text-xl text-blue-600">
             <Rocket size={24} />
@@ -362,7 +362,7 @@ export const HomePage = () => {
             © 2024 DevResource Hub. All rights reserved.
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
