@@ -54,13 +54,13 @@ export default function RootLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <AnalyticsScripts />
+      { /* <AnalyticsScripts />*/}
       <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
         <header className="bg-blue-900 dark:bg-gray-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300 border-b dark:border-gray-800">
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
             <Link href="/">
               <Image
-                src="/devresourcehub logo.jpeg"
+                src="/devresourcehub logo.jpg"
                 alt="logo"
                 width={70}
                 height={70}
