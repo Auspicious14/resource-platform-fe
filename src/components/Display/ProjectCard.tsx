@@ -21,7 +21,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         <Card className="group h-full flex flex-col overflow-hidden border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/20 transition-all duration-300">
           <div className="relative aspect-video overflow-hidden">
             <img 
-              src={project.thumbnailUrl || `https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
+              src={project.coverImage || project.thumbnailUrl || `https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               alt={project.title}
             />

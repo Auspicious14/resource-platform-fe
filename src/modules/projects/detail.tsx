@@ -59,7 +59,7 @@ export const ProjectDetailPage = ({
   const [showHintModal, setShowHintModal] = useState(false);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [selectedMilestoneForHint, setSelectedMilestoneForHint] =
-    useState<any>(null);
+    useState<IProjectMilestone | null>(null);
   const { startProject, completeMilestone, getOneProject } = useProjectState();
 
   const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US", {
@@ -91,11 +91,23 @@ export const ProjectDetailPage = ({
   const isProjectStartedInCurrentMode = !!currentModeProgress;
 
   const handleStartProject = async () => {
+    // If project is already started in this mode, just navigate to milestones
+    if (isProjectStartedInCurrentMode) {
+      setActiveTab("milestones");
+      // Optional: Smooth scroll to milestones section
+      document
+        .getElementById("tabs-section")
+        ?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
     try {
       await startProject(project.id, difficultyMode);
       // Refresh local state using context's getOneProject to ensure we stay in sync
       const updated = await getOneProject(project.id);
       if (updated) setProject(updated);
+      setActiveTab("milestones");
+      toast.success(`Strategy selected: ${difficultyMode} Mode activated.`);
     } catch (error: any) {
       // Error handled in context
     }
@@ -175,7 +187,7 @@ export const ProjectDetailPage = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock size={18} className="text-purple-500" />
-                  <span>Estimated: 12-15 hours</span>
+                  <span>Estimated: {project.estimatedTime}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen size={18} className="text-green-500" />
@@ -187,7 +199,7 @@ export const ProjectDetailPage = ({
             <Card className="w-full lg:w-80 shadow-xl border-blue-100 dark:border-gray-800 ring-4 ring-blue-50/50 dark:ring-gray-800/50">
               <div className="aspect-video relative">
                 <img
-                  src={`https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
+                  src={project.coverImage || `https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
                   className="w-full h-full object-cover rounded-t-xl"
                   alt={project.title}
                 />
@@ -240,7 +252,7 @@ export const ProjectDetailPage = ({
       </div>
 
       {/* Tabs Section */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div id="tabs-section" className="max-w-6xl mx-auto px-4 py-12">
         <div className="flex gap-8 border-b border-gray-200 mb-8 overflow-x-auto scrollbar-hide">
           {[
             { id: "overview", label: "Overview", icon: FileText },
@@ -271,6 +283,77 @@ export const ProjectDetailPage = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-12"
               >
+                {/* User Progress Section */}
+                <section className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                    <Zap className="text-amber-500" /> Your Learning Journey
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {["GUIDED", "STANDARD", "HARDCORE"].map((mode) => {
+                      const modeProgress =
+                        progressByModeCalculated[mode as any] || 0;
+                      const isActive =
+                        project.userProgress?.difficultyModeChosen === mode;
+                      return (
+                        <div
+                          key={mode}
+                          className={`p-5 rounded-2xl border transition-all ${
+                            isActive
+                              ? "bg-blue-50/50 border-blue-200 dark:bg-blue-900/10 dark:border-blue-800"
+                              : "bg-gray-50/50 border-gray-100 dark:bg-gray-800/20 dark:border-gray-800"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                              {mode}
+                            </span>
+                            {isActive && (
+                              <Badge variant="default" className="text-[9px]">
+                                Active
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+                            {modeProgress}%
+                          </div>
+                          <div className="h-2 w-full bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-1000 ${
+                                mode === "GUIDED"
+                                  ? "bg-blue-500"
+                                  : mode === "STANDARD"
+                                  ? "bg-purple-500"
+                                  : "bg-orange-500"
+                              }`}
+                              style={{ width: `${modeProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {project.userProgress && (
+                    <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm">
+                      <div className="text-gray-500 dark:text-gray-400">
+                        Current Session:{" "}
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {project.userProgress.difficultyModeChosen}
+                        </span>
+                      </div>
+                      <div className="text-gray-500 dark:text-gray-400">
+                        Started:{" "}
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {new Date(
+                            project.userProgress.startedAt
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </section>
                 <section>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Target className="text-blue-600" /> Project Objectives
@@ -637,8 +720,16 @@ export const ProjectDetailPage = ({
           isOpen={showHintModal}
           onClose={() => setShowHintModal(false)}
           milestoneTitle={selectedMilestoneForHint.title}
-          hints={selectedMilestoneForHint.hints || []}
+          hints={
+            Array.isArray(selectedMilestoneForHint.hints)
+              ? selectedMilestoneForHint.hints
+              : (selectedMilestoneForHint.hints as Record<string, string[]>)?.[
+                  difficultyMode
+                ] || []
+          }
           difficultyMode={difficultyMode}
+          projectId={project.id}
+          milestoneNumber={selectedMilestoneForHint.milestoneNumber}
         />
       )}
 

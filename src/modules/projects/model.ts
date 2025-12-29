@@ -25,7 +25,9 @@ export interface IProject {
     }
   >;
   userProgress?: any;
-  createdBy?: any
+  createdBy?: any;
+  featured?: boolean;
+  coverImage?: string | File;
 }
 
 export interface IProjectMilestone {
@@ -34,7 +36,7 @@ export interface IProjectMilestone {
   milestoneNumber: number;
   title: string;
   description: string;
-  hints: string[];
+  hints: string[] | Record<string, string[]>;
   validationCriteria?: string;
 }
 

@@ -145,37 +145,45 @@ export const HomePage = () => {
       {/* Features Grid */}
       <section className="py-24 px-4 max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Why choose DevResource?</h2>
-          <p className="text-gray-600">
+          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            Why choose DevResource?
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
             Everything you need to go from beginner to pro.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="p-8 border-none bg-blue-50/50">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-blue-600">
+          <Card className="p-8 border-none bg-blue-50/50 dark:bg-blue-900/10">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400">
               <Target size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3">Guided Milestones</h3>
+            <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              Guided Milestones
+            </h3>
             <p className="text-gray-600 leading-relaxed">
               Projects are broken down into manageable milestones with clear
               objectives and validation criteria.
             </p>
           </Card>
-          <Card className="p-8 border-none bg-purple-50/50">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 text-purple-600">
+          <Card className="p-8 border-none bg-purple-50/50 dark:bg-purple-900/10">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-6 text-purple-600 dark:text-purple-400">
               <BrainCircuit size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3">AI Personal Mentor</h3>
+            <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              AI Personal Mentor
+            </h3>
             <p className="text-gray-600 leading-relaxed">
               Stuck on a bug? Our context-aware AI understands your project and
               provides hints without giving away the answer.
             </p>
           </Card>
-          <Card className="p-8 border-none bg-green-50/50">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6 text-green-600">
+          <Card className="p-8 border-none bg-green-50/50 dark:bg-green-900/10">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-6 text-green-600 dark:text-green-400">
               <MessagesSquare size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3">Community Reviews</h3>
+            <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              Community Reviews
+            </h3>
             <p className="text-gray-600 leading-relaxed">
               Submit your solutions and get feedback from other developers.
               Learn by reviewing others' work too.
@@ -185,12 +193,14 @@ export const HomePage = () => {
       </section>
 
       {/* Featured Projects Carousel (Simple Grid) */}
-      <section className="py-24 bg-gray-900 text-white">
+      <section className="py-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <h2 className="text-3xl font-bold mb-4">Featured Projects</h2>
-              <p className="text-gray-400">
+              <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+                Featured Projects
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
                 Hand-picked challenges to boost your skills.
               </p>
             </div>
@@ -209,34 +219,34 @@ export const HomePage = () => {
                 whileHover={{ y: -5 }}
                 className="group"
               >
-                <Card className="bg-gray-800 border-gray-700 overflow-hidden h-full">
-                  <div className="aspect-video bg-gray-700 relative overflow-hidden">
+                <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 overflow-hidden h-full shadow-sm">
+                  <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative overflow-hidden">
                     <img
-                      src={`https://placehold.co/600x400/1f2937/white?text=${project.title}`}
+                      src={project.coverImage || `https://placehold.co/600x400/3b82f6/ffffff?text=${project.title}`}
                       alt={project.title}
                       className="object-cover w-full h-full transition-transform group-hover:scale-105"
                     />
                     <div className="absolute top-4 left-4">
                       <Badge
                         variant="secondary"
-                        className="bg-black/50 backdrop-blur-md border-none text-white capitalize"
+                        className="bg-white/80 dark:bg-black/50 backdrop-blur-md border-none text-gray-900 dark:text-white capitalize"
                       >
                         {project.difficultyLevel.toLowerCase()}
                       </Badge>
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-6">
                       {project.technologies?.slice(0, 3).map((tech, i) => (
                         <span
                           key={i}
-                          className="text-[10px] uppercase tracking-wider font-bold text-gray-500 bg-gray-900/50 px-2 py-1 rounded"
+                          className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/50 px-2 py-1 rounded"
                         >
                           {tech}
                         </span>
@@ -244,7 +254,7 @@ export const HomePage = () => {
                     </div>
                     <Button
                       variant="outline"
-                      className="w-full border-gray-700 hover:bg-gray-700 text-white"
+                      className="w-full border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                       onClick={() => router.push(`/projects/${project.id}`)}
                     >
                       View Details

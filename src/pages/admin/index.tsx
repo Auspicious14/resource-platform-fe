@@ -1,30 +1,22 @@
-import CreateProjectPage from "@/modules/projects/create/page";
-import React from "react";
+import { requireAdmin } from "@/utils/ssr-auth";
 import { GetServerSideProps } from "next";
-import { requireAuth } from "@/utils/ssr-auth";
 import { AxiosClient } from "@/components";
+import { AdminDashboard } from "@/modules/admin/dashboard";
 
-const CreateProject = () => {
-  return <CreateProjectPage />;
-};
-
-export default CreateProject;
+export default function Admin() {
+  return <AdminDashboard />;
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const auth = requireAuth(context);
+  const auth = requireAdmin(context);
   if ("redirect" in auth) return auth;
 
   try {
-    // Calling the backend API is the most secure method because it:
-    // 1. Validates the token against the database (handles revocation).
-    // 2. Ensures we have the most up-to-date user role.
-    // 3. Keeps JWT_SECRET off the frontend for better security.
     const response = await AxiosClient.get("/auth/me", {
       headers: { Authorization: `Bearer ${auth.token}` },
     });
     const user = response.data?.data;
 
-    // Strict role check for project creation
     if (!["ADMIN", "CONTRIBUTOR"].includes(user?.role)) {
       return {
         redirect: {

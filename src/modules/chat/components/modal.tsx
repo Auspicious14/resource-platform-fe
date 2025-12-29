@@ -35,6 +35,17 @@ export const ChatModal = ({
     getMessages();
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   const handleSendMessage = async (question: string) => {
     if (!question.trim()) return toast.error("Enter a message to proceed");
     setUserQuestion(question);

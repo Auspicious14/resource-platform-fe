@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useProjectState } from "../context";
 import { Button } from "@/components/Buttons";
-import { Lightbulb, Lock, Unlock, AlertCircle, X } from "lucide-react";
+import { Lightbulb, Lock, Unlock, AlertCircle, X, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HintModalProps {
@@ -9,6 +10,8 @@ interface HintModalProps {
   milestoneTitle: string;
   hints: string[];
   difficultyMode: "GUIDED" | "STANDARD" | "HARDCORE";
+  projectId: string;
+  milestoneNumber: number;
 }
 
 export const HintModal: React.FC<HintModalProps> = ({
@@ -17,24 +20,60 @@ export const HintModal: React.FC<HintModalProps> = ({
   milestoneTitle,
   hints,
   difficultyMode,
+  projectId,
+  milestoneNumber,
 }) => {
+  const { requestAIHint, getOneProject } = useProjectState();
   const [unlockedCount, setUnlockedCount] = useState(0);
+  const [activeHints, setActiveHints] = useState<string[]>(hints);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  // Reset unlocked count when modal closes or milestone changes
   useEffect(() => {
-    if (!isOpen) {
+    setActiveHints(hints);
+  }, [hints]);
+
+  // Reset unlocked count and handle scroll lock
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
       setUnlockedCount(0);
     }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [isOpen, milestoneTitle]);
 
   if (!isOpen) return null;
 
-  const canUnlockMore = unlockedCount < hints.length;
+  const canUnlockMore = unlockedCount < activeHints.length;
   const isHardcore = difficultyMode === "HARDCORE";
 
   const handleUnlockNext = () => {
     if (canUnlockMore && !isHardcore) {
       setUnlockedCount((prev) => prev + 1);
+    }
+  };
+
+  const handleGenerateAIHint = async () => {
+    if (isHardcore) return;
+    setIsGenerating(true);
+    try {
+      const newHint = await requestAIHint(
+        projectId,
+        milestoneNumber,
+        difficultyMode
+      );
+      // Refresh global state so hint appears in milestones tab permanently
+      await getOneProject(projectId);
+
+      setActiveHints((prev) => [...prev, newHint]);
+      setUnlockedCount((prev) => prev + 1);
+    } catch (error) {
+      // Error handled in context
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -103,7 +142,7 @@ export const HintModal: React.FC<HintModalProps> = ({
           ) : (
             <>
               <div className="space-y-4">
-                {hints.map((hint, index) => {
+                {activeHints.map((hint, index) => {
                   const isUnlocked = index < unlockedCount;
                   return (
                     <div
@@ -135,7 +174,9 @@ export const HintModal: React.FC<HintModalProps> = ({
                                 isUnlocked ? "text-amber-600" : "text-gray-400"
                               }`}
                             >
-                              Hint #{index + 1}
+                              {index < hints.length
+                                ? `Hint #${index + 1}`
+                                : "AI Generated Hint"}
                             </span>
                           </div>
                           <AnimatePresence mode="wait">
@@ -164,15 +205,29 @@ export const HintModal: React.FC<HintModalProps> = ({
                 })}
               </div>
 
-              {canUnlockMore && (
+              {(canUnlockMore || !isGenerating) && (
                 <div className="pt-4 space-y-3">
-                  <Button
-                    onClick={handleUnlockNext}
-                    className="w-full h-12 gap-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-200 transition-all active:scale-[0.98]"
-                  >
-                    <Unlock size={20} />
-                    Unlock Next Hint
-                  </Button>
+                  {canUnlockMore ? (
+                    <Button
+                      onClick={handleUnlockNext}
+                      className="w-full h-12 gap-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-200 transition-all active:scale-[0.98]"
+                    >
+                      <Unlock size={20} />
+                      Unlock Next Hint
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleGenerateAIHint}
+                      isLoading={isGenerating}
+                      disabled={isGenerating}
+                      className="w-full h-12 gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98]"
+                    >
+                      <Zap size={20} />
+                      {activeHints.length === 0
+                        ? "Generate AI Hint"
+                        : "Request New AI Hint"}
+                    </Button>
+                  )}
                   <p className="text-[10px] text-center text-gray-400 uppercase tracking-widest font-bold">
                     {difficultyMode === "GUIDED"
                       ? "Free hints in Guided mode"
@@ -187,13 +242,13 @@ export const HintModal: React.FC<HintModalProps> = ({
                 </div>
               )}
 
-              {hints.length === 0 && (
+              {activeHints.length === 0 && !isGenerating && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
                     <Lightbulb size={32} />
                   </div>
                   <p className="text-gray-400 text-sm italic">
-                    No hints available for this milestone.
+                    No pre-defined hints. Use the button above to generate one!
                   </p>
                 </div>
               )}

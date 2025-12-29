@@ -23,7 +23,7 @@ export default function NotificationDropdown() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+        className="relative p-2 text-white/80 hover:text-white transition-colors"
       >
         <BellIcon className="h-6 w-6" />
         {unreadCount > 0 && (

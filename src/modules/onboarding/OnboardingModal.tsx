@@ -1,19 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Rocket, 
-  Target, 
-  Code2, 
-  Award, 
-  ChevronRight, 
-  ChevronLeft, 
-  Check, 
+import {
+  Rocket,
+  Target,
+  Code2,
+  Award,
+  ChevronRight,
+  ChevronLeft,
+  Check,
   Sparkles,
   Search,
   BookOpen,
-  Laptop
+  Laptop,
 } from "lucide-react";
 import { Button, Card, CardContent, Badge } from "@/components";
 import toast from "react-hot-toast";
@@ -26,14 +26,16 @@ interface OnboardingModalProps {
 const steps = [
   {
     title: "Welcome to Devdrill",
-    description: "Let's personalize your learning experience. We'll help you find the best projects to level up your skills.",
+    description:
+      "Let's personalize your learning experience. We'll help you find the best projects to level up your skills.",
     icon: Rocket,
     color: "text-blue-600",
     bg: "bg-blue-50 dark:bg-blue-900/20",
   },
   {
     title: "Learning Goals",
-    description: "What are you looking to achieve? This helps us recommend the right paths.",
+    description:
+      "What are you looking to achieve? This helps us recommend the right paths.",
     icon: Target,
     color: "text-purple-600",
     bg: "bg-purple-50 dark:bg-purple-900/20",
@@ -64,22 +66,59 @@ const goals = [
 ];
 
 const technologies = [
-  "React", "Next.js", "Node.js", "TypeScript", "Python", 
-  "Tailwind CSS", "Prisma", "SQL", "Docker", "AWS",
-  "React Native", "Go", "Rust", "Vue.js"
+  "React",
+  "Next.js",
+  "Node.js",
+  "TypeScript",
+  "Python",
+  "Tailwind CSS",
+  "Prisma",
+  "SQL",
+  "Docker",
+  "AWS",
+  "React Native",
+  "Go",
+  "Rust",
+  "Vue.js",
 ];
 
 const skillLevels = [
-  { label: "Beginner", description: "Just starting my coding journey", icon: Laptop },
-  { label: "Intermediate", description: "Have built some projects before", icon: Code2 },
-  { label: "Advanced", description: "Experienced developer looking for challenges", icon: Sparkles },
+  {
+    label: "Beginner",
+    description: "Just starting my coding journey",
+    icon: Laptop,
+  },
+  {
+    label: "Intermediate",
+    description: "Have built some projects before",
+    icon: Code2,
+  },
+  {
+    label: "Advanced",
+    description: "Experienced developer looking for challenges",
+    icon: Sparkles,
+  },
 ];
 
-export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) => {
+export const OnboardingModal: React.FC<OnboardingModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<string>("");
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -99,14 +138,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   };
 
   const toggleGoal = (goal: string) => {
-    setSelectedGoals(prev => 
-      prev.includes(goal) ? prev.filter(g => g !== goal) : [...prev, goal]
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
   };
 
   const toggleTech = (tech: string) => {
-    setSelectedTech(prev => 
-      prev.includes(tech) ? prev.filter(t => t !== tech) : [...prev, tech]
+    setSelectedTech((prev) =>
+      prev.includes(tech) ? prev.filter((t) => t !== tech) : [...prev, tech]
     );
   };
 
@@ -115,10 +154,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
       case 0:
         return (
           <div className="text-center py-8">
-            <div className={`w-20 h-20 ${steps[0].bg} rounded-3xl flex items-center justify-center mx-auto mb-6`}>
+            <div
+              className={`w-20 h-20 ${steps[0].bg} rounded-3xl flex items-center justify-center mx-auto mb-6`}
+            >
               <Rocket className={`w-10 h-10 ${steps[0].color}`} />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{steps[0].title}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              {steps[0].title}
+            </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
               {steps[0].description}
             </p>
@@ -132,7 +175,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
               {steps[1].title}
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {goals.map(goal => (
+              {goals.map((goal) => (
                 <button
                   key={goal}
                   onClick={() => toggleGoal(goal)}
@@ -158,9 +201,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
               <Code2 className="text-green-600" />
               {steps[2].title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Select at least 3 technologies.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+              Select at least 3 technologies.
+            </p>
             <div className="flex flex-wrap gap-2">
-              {technologies.map(tech => (
+              {technologies.map((tech) => (
                 <button
                   key={tech}
                   onClick={() => toggleTech(tech)}
@@ -184,7 +229,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
               {steps[3].title}
             </h2>
             <div className="space-y-4">
-              {skillLevels.map(level => (
+              {skillLevels.map((level) => (
                 <button
                   key={level.label}
                   onClick={() => setSelectedSkill(level.label)}
@@ -194,14 +239,28 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                       : "border-gray-100 dark:border-gray-800 hover:border-amber-200 dark:hover:border-amber-800"
                   }`}
                 >
-                  <div className={`p-3 rounded-xl ${selectedSkill === level.label ? "bg-amber-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-500"}`}>
+                  <div
+                    className={`p-3 rounded-xl ${
+                      selectedSkill === level.label
+                        ? "bg-amber-600 text-white"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-500"
+                    }`}
+                  >
                     <level.icon size={24} />
                   </div>
                   <div>
-                    <div className={`font-bold text-lg ${selectedSkill === level.label ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
+                    <div
+                      className={`font-bold text-lg ${
+                        selectedSkill === level.label
+                          ? "text-gray-900 dark:text-white"
+                          : "text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
                       {level.label}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{level.description}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {level.description}
+                    </div>
                   </div>
                   {selectedSkill === level.label && (
                     <div className="ml-auto text-amber-600">
@@ -219,66 +278,70 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl overflow-hidden"
-      >
-        {/* Progress Bar */}
-        <div className="absolute top-0 left-0 w-full h-1.5 flex">
-          {steps.map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 h-full transition-all duration-500 ${
-                i <= currentStep ? "bg-blue-600" : "bg-gray-100 dark:bg-gray-800"
-              }`}
-            />
-          ))}
-        </div>
-
-        <div className="p-8 md:p-12">
-          {renderStep()}
-
-          <div className="mt-12 flex items-center justify-between">
-            <button
-              onClick={handleBack}
-              className={`flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-all ${
-                currentStep === 0 
-                  ? "opacity-0 pointer-events-none" 
-                  : "text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
-            >
-              <ChevronLeft size={20} />
-              Back
-            </button>
-            <Button
-              onClick={handleNext}
-              className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20"
-              disabled={
-                (currentStep === 1 && selectedGoals.length === 0) ||
-                (currentStep === 2 && selectedTech.length < 3) ||
-                (currentStep === 3 && !selectedSkill)
-              }
-            >
-              {currentStep === steps.length - 1 ? "Get Started" : "Continue"}
-              <ChevronRight size={20} className="ml-2" />
-            </Button>
+    <div className="fixed inset-0 z-[120] overflow-y-auto">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl overflow-hidden"
+        >
+          {/* Progress Bar */}
+          <div className="absolute top-0 left-0 w-full h-1.5 flex">
+            {steps.map((_, i) => (
+              <div
+                key={i}
+                className={`flex-1 h-full transition-all duration-500 ${
+                  i <= currentStep
+                    ? "bg-blue-600"
+                    : "bg-gray-100 dark:bg-gray-800"
+                }`}
+              />
+            ))}
           </div>
-        </div>
 
-        {/* Decorative corner element */}
-        <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl" />
-        <div className="absolute -top-12 -left-12 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl" />
-      </motion.div>
+          <div className="p-8 md:p-12">
+            {renderStep()}
+
+            <div className="mt-12 flex items-center justify-between">
+              <button
+                onClick={handleBack}
+                className={`flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-all ${
+                  currentStep === 0
+                    ? "opacity-0 pointer-events-none"
+                    : "text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                <ChevronLeft size={20} />
+                Back
+              </button>
+              <Button
+                onClick={handleNext}
+                className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20"
+                disabled={
+                  (currentStep === 1 && selectedGoals.length === 0) ||
+                  (currentStep === 2 && selectedTech.length < 3) ||
+                  (currentStep === 3 && !selectedSkill)
+                }
+              >
+                {currentStep === steps.length - 1 ? "Get Started" : "Continue"}
+                <ChevronRight size={20} className="ml-2" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Decorative corner element */}
+          <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl" />
+          <div className="absolute -top-12 -left-12 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl" />
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { AxiosClient } from "@/components";
 import { useChatState } from "@/modules/chat/context";
 import { ChatPage } from "@/modules/chat/page";
+import { requireAuth } from "@/utils/ssr-auth";
 import { GetServerSideProps } from "next";
 import React, { useEffect } from "react";
 
@@ -17,21 +18,16 @@ const Chat = ({ messages }: any) => {
 export default Chat;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req, res } = context;
-  const token = req.cookies?.token;
+  const auth = requireAuth(context);
+  if ("redirect" in auth) return auth;
 
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
-    };
+  try {
+    const response = await AxiosClient.get("/ai/chat", {
+      headers: { Authorization: `Bearer ${auth.token}` },
+    });
+    const data = response.data?.data;
+    return { props: { messages: data || null } };
+  } catch (error) {
+    return { props: { messages: null } };
   }
-
-  const response = await AxiosClient.get("/ai/chat", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = response.data?.data;
-  return { props: { messages: data || null } };
 };

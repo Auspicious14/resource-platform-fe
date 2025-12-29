@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSocial } from "./context";
 import { ShareIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
@@ -14,6 +14,17 @@ export default function ShareButton({
 }: ShareButtonProps) {
   const { shareProject } = useSocial();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   const platforms = [
     { name: "Twitter", icon: "𝕏", color: "bg-black hover:bg-gray-800" },

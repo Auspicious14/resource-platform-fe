@@ -89,6 +89,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("token") || document.cookie.includes("token=")
+        : null;
+
+    if (!token) return;
+
     const initFetch = async () => {
       setIsLoading(true);
       await fetchNotifications();

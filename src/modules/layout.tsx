@@ -5,7 +5,7 @@ import { Poppins, Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,6 +13,7 @@ import { OnboardingModal } from "./onboarding/OnboardingModal";
 import { GlobalSearch } from "@/components/Search/GlobalSearch";
 import { useAnalytics, AnalyticsScripts } from "@/utils/analytics";
 import NotificationDropdown from "./notifications/dropdown";
+import { useAuth } from "./auth/context";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -27,6 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const fullYear = new Date().getFullYear();
+  const { user, logout } = useAuth();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -54,7 +56,7 @@ export default function RootLayout({
       enableSystem
       disableTransitionOnChange
     >
-      { /* <AnalyticsScripts />*/}
+      {/* <AnalyticsScripts />*/}
       <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
         <header className="bg-blue-900 dark:bg-gray-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300 border-b dark:border-gray-800">
           <nav className="container mx-auto flex justify-between items-center px-4 py-4">
@@ -113,8 +115,35 @@ export default function RootLayout({
               >
                 Events
               </Link>
-              <NotificationDropdown />
-              <ThemeToggle />
+              <div className="flex items-center gap-2 p-1 bg-white/5 dark:bg-black/20 rounded-xl border border-white/10 dark:border-white/5 mx-2">
+                <NotificationDropdown />
+                <div className="w-px h-6 bg-white/10 dark:bg-white/5 mx-1" />
+                <ThemeToggle />
+              </div>
+              {!user ? (
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/signin"
+                    className="px-4 py-2 text-sm font-medium hover:text-blue-200 transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2 text-sm font-medium bg-white text-blue-900 dark:bg-blue-600 dark:text-white rounded-lg hover:bg-blue-50 dark:hover:bg-blue-700 transition-all duration-200 shadow-sm"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              ) : (
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200 border border-transparent hover:border-white/10"
+                >
+                  <span>Logout</span>
+                  <LogOut size={18} />
+                </button>
+              )}
             </div>
 
             {/* Mobile Actions */}
@@ -122,7 +151,7 @@ export default function RootLayout({
               <ThemeToggle />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 text-white hover:bg-blue-800 rounded-lg transition-colors"
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -137,7 +166,7 @@ export default function RootLayout({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden bg-blue-900 border-t border-blue-800 overflow-hidden"
+                className="md:hidden bg-blue-900 dark:bg-gray-900 border-t border-blue-800 dark:border-gray-800 overflow-y-auto max-h-[calc(100vh-80px)]"
               >
                 <div className="flex flex-col p-4 space-y-4">
                   <div className="px-2 pb-2">
@@ -196,6 +225,35 @@ export default function RootLayout({
                     <span className="font-medium">Notifications</span>
                     <NotificationDropdown />
                   </div>
+                  {!user ? (
+                    <div className="flex flex-col gap-2 px-2 pt-2 pb-4">
+                      <Link
+                        href="/signin"
+                        className="w-full px-4 py-3 rounded-xl border border-white/10 text-center font-medium hover:bg-white/5"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/signup"
+                        className="w-full px-4 py-3 rounded-xl bg-white text-blue-900 text-center font-bold hover:bg-blue-50"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Get Started
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-red-500/20 text-red-100 transition-colors font-medium border border-transparent hover:border-red-500/30"
+                    >
+                      <span>Logout</span>
+                      <LogOut size={20} />
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}

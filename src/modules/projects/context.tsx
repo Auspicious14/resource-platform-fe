@@ -23,6 +23,11 @@ interface IProjectState {
   getProjects: () => Promise<void>;
   getFeaturedProjects: () => Promise<void>;
   getOneProject: (id: string) => Promise<any>;
+  requestAIHint: (
+    projectId: string,
+    milestoneNumber: number,
+    difficultyMode: string
+  ) => Promise<string>;
   setProjects: (projects: IProject[]) => void;
   setFeaturedProjects: (projects: IProject[]) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -53,10 +58,34 @@ export const ProjectConextProvider = ({ children }: IProps) => {
   const createProject = async (values: any) => {
     setIsLoading(true);
     try {
-      const response = await AxiosClient.post("/projects/create", values);
+      let dataToSend = values;
+      const hasFile = values.coverImage instanceof File;
+
+      if (hasFile) {
+        const formData = new FormData();
+        Object.keys(values).forEach((key) => {
+          if (
+            key === "milestones" ||
+            key === "resourceLinks" ||
+            key === "learningObjectives" ||
+            key === "technologies" ||
+            key === "categories" ||
+            key === "difficultyModes"
+          ) {
+            formData.append(key, JSON.stringify(values[key]));
+          } else {
+            formData.append(key, values[key]);
+          }
+        });
+        dataToSend = formData;
+      }
+
+      const response = await AxiosClient.post("/projects", dataToSend, {
+        headers: hasFile ? { "Content-Type": "multipart/form-data" } : {},
+      });
       const data = response.data?.data;
       if (data) {
-        setProjects((prev) => [...prev, response.data]);
+        setProjects((prev) => [data, ...prev]);
         toast.success("Project created successfully");
         router.push("/projects");
         return data;
@@ -73,11 +102,35 @@ export const ProjectConextProvider = ({ children }: IProps) => {
   const updateProject = async (id: string, values: any) => {
     setIsLoading(true);
     try {
-      const response = await AxiosClient.put(`/projects/${id}`, values);
+      let dataToSend = values;
+      const hasFile = values.coverImage instanceof File;
+
+      if (hasFile) {
+        const formData = new FormData();
+        Object.keys(values).forEach((key) => {
+          if (
+            key === "milestones" ||
+            key === "resourceLinks" ||
+            key === "learningObjectives" ||
+            key === "technologies" ||
+            key === "categories" ||
+            key === "difficultyModes"
+          ) {
+            formData.append(key, JSON.stringify(values[key]));
+          } else {
+            formData.append(key, values[key]);
+          }
+        });
+        dataToSend = formData;
+      }
+
+      const response = await AxiosClient.put(`/projects/${id}`, dataToSend, {
+        headers: hasFile ? { "Content-Type": "multipart/form-data" } : {},
+      });
       const data = response.data?.data;
       if (data) {
         setProjects((prev) =>
-          prev.map((project) => (project.id === id ? response.data : project))
+          prev.map((project) => (project.id === id ? data : project))
         );
         toast.success("Project updated successfully");
         return data;
@@ -209,6 +262,24 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       // setIsLoading(false);
     }
   };
+
+  const requestAIHint = async (
+    projectId: string,
+    milestoneNumber: number,
+    difficultyMode: string
+  ) => {
+    try {
+      const response = await AxiosClient.post("/ai/hint-request", {
+        projectId,
+        milestoneNumber,
+        difficultyMode,
+      });
+      return response.data?.data;
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to fetch AI hint");
+      throw err;
+    }
+  };
   return (
     <ProjectContext.Provider
       value={{
@@ -224,6 +295,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         deleteProject,
         startProject,
         completeMilestone,
+        requestAIHint,
         setProjects,
         setFeaturedProjects,
         getFeaturedProjects,

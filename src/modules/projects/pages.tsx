@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../auth/context";
 import Link from "next/link";
 import { IProject } from "./model";
 import { useProjectState } from "./context";
@@ -27,6 +28,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DifficultyBadge } from "@/components/Display/DifficultyBadge";
+import { Plus } from "lucide-react";
 
 const difficultyOptions = [
   { label: "All Difficulties", value: "" },
@@ -50,6 +52,7 @@ const categoryOptions = [
 ];
 
 export const ProjectsPage = () => {
+  const { user } = useAuth();
   const { projects } = useProjectState();
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -141,6 +144,14 @@ export const ProjectsPage = () => {
                   </span>
                 )}
               </Button>
+              {["ADMIN", "CONTRIBUTOR"].includes(user?.role) && (
+                <Link href="/projects/create">
+                  <Button className="h-12 px-6 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all duration-300">
+                    <Plus size={18} className="mr-2" />
+                    Create Project
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -201,6 +212,7 @@ export const ProjectsPage = () => {
                 <Layers size={16} /> Category
               </h3>
               <SelectInput
+                ignoreFormik
                 label=""
                 name="category"
                 value={filters.category}
@@ -215,6 +227,7 @@ export const ProjectsPage = () => {
                 <ArrowUpDown size={16} /> Sort By
               </h3>
               <SelectInput
+                ignoreFormik
                 label=""
                 name="sort"
                 value={filters.sort}
@@ -242,6 +255,7 @@ export const ProjectsPage = () => {
                   placeholder="Search projects..."
                 />
                 <SelectInput
+                  ignoreFormik
                   label="Difficulty"
                   name="difficulty"
                   value={filters.difficulty}
@@ -249,6 +263,7 @@ export const ProjectsPage = () => {
                   options={difficultyOptions}
                 />
                 <SelectInput
+                  ignoreFormik
                   label="Category"
                   name="category"
                   value={filters.category}
@@ -256,6 +271,7 @@ export const ProjectsPage = () => {
                   options={categoryOptions}
                 />
                 <SelectInput
+                  ignoreFormik
                   label="Sort By"
                   name="sort"
                   value={filters.sort}
@@ -293,9 +309,7 @@ export const ProjectsPage = () => {
                         <CardContent className="p-4 flex items-center gap-6">
                           <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                             <img
-                              src={
-                                `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`
-                              }
+                              src={project.coverImage || `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`}
                               className="w-full h-full object-cover transition-transform group-hover:scale-110"
                               alt={project.title}
                             />

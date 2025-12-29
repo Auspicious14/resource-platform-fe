@@ -156,7 +156,7 @@ export const GlobalSearch = () => {
                         <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden flex-shrink-0">
                           <img
                             src={
-                              project.thumbnailUrl ||
+                              project.coverImage ||
                               `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`
                             }
                             className="w-full h-full object-cover"
