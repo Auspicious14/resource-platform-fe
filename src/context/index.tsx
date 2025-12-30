@@ -66,12 +66,14 @@ import { SubmissionProvider } from "@/modules/submissions/context";
 import { CommunityProvider } from "@/modules/community/context";
 import { NotificationProvider } from "@/modules/notifications/context";
 import { ProfileProvider } from "@/modules/profile/context";
+import { DashboardProvider } from "@/modules/dashboard/context";
 
 const providers = [
   QueryProvider,
   AuthContextProvider,
   ProjectConextProvider,
   ProfileProvider,
+  DashboardProvider,
   ChatContextProvider,
   SubmissionProvider,
   CommunityProvider,

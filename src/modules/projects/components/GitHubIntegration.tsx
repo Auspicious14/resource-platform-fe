@@ -33,6 +33,13 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
   const [commits, setCommits] = useState<any[]>([]);
 
   useEffect(() => {
+    if (initialRepoUrl) {
+      setRepoUrl(initialRepoUrl);
+      setIsLinked(true);
+    }
+  }, [initialRepoUrl]);
+
+  useEffect(() => {
     if (isLinked && projectId) {
       fetchCommits();
     }

@@ -720,13 +720,18 @@ export const ProjectDetailPage = ({
               </Card>
 
               {/* GitHub Integration Card */}
-              <GitHubIntegration
-                projectId={project.id}
-                initialRepoUrl={project.starterRepoUrl}
-                onRepoLinked={(url) => {
-                  setProject((prev) => ({ ...prev, starterRepoUrl: url }));
-                }}
-              />
+              {user && (
+                <GitHubIntegration
+                  projectId={project.id}
+                  initialRepoUrl={project.userProgress?.repoUrl}
+                  onRepoLinked={(url) => {
+                    setProject((prev) => ({
+                      ...prev,
+                      userProgress: { ...prev.userProgress, repoUrl: url },
+                    }));
+                  }}
+                />
+              )}
 
               {/* AI Guide Premium Card */}
               <Card className="bg-gray-900 dark:bg-gray-950 border-none overflow-hidden shadow-xl rounded-[2rem] relative group">
@@ -744,7 +749,8 @@ export const ProjectDetailPage = ({
                 </CardHeader>
                 <CardContent className="relative z-10">
                   <Button
-                    className="w-full bg-white text-gray-900 hover:bg-gray-100 font-black rounded-xl h-11 text-xs transition-transform active:scale-95"
+                    variant="transparent"
+                    className="w-full text-white hover:text-primary"
                     onClick={() => setShowChatModal(true)}
                   >
                     Ask AI Assistant
