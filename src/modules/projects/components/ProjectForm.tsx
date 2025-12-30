@@ -512,7 +512,7 @@ export function ProjectForm({
                             validationCriteria: "",
                           })
                         }
-                        className="w-full border-2 border-dashed border-gray-300"
+                        className="w-full border-2 "
                       >
                         <PlusIcon className="w-4 h-4 mr-2" /> Add Milestone
                       </Button>

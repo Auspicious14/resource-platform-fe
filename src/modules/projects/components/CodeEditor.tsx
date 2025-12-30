@@ -31,6 +31,7 @@ import {
 } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { useProjectState } from "../context";
+import toast from "react-hot-toast";
 
 interface CodeEditorProps {
   isOpen: boolean;
@@ -145,6 +146,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
+    if (!projectId || !milestoneId) {
+      toast.error("Project or Milestone information is missing.");
+      return;
+    }
+
     setShowReview(false);
 
     try {

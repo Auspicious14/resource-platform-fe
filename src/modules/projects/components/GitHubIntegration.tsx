@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// features/projects/components/GitHubIntegration.tsx
+import React, { useState, useEffect } from "react";
 import {
   Github,
   ExternalLink,
@@ -10,8 +11,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/Buttons";
 import { Badge } from "@/components/Badge";
-import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { AxiosClient } from "@/components";
+import Link from "next/link";
 
 interface GitHubIntegrationProps {
   projectId: string;
@@ -28,28 +30,24 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
   const [isLinking, setIsLinking] = useState(false);
   const [isLinked, setIsLinked] = useState(!!initialRepoUrl);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [commits, setCommits] = useState<any[]>([]);
 
-  // Mock commit data
-  const [commits] = useState([
-    {
-      id: "1",
-      message: "Initial project setup and directory structure",
-      date: "2 hours ago",
-      author: "User",
-    },
-    {
-      id: "2",
-      message: "Implemented core components and routing",
-      date: "5 hours ago",
-      author: "User",
-    },
-    {
-      id: "3",
-      message: "Added authentication middleware and user service",
-      date: "Yesterday",
-      author: "User",
-    },
-  ]);
+  useEffect(() => {
+    if (isLinked && projectId) {
+      fetchCommits();
+    }
+  }, [isLinked, projectId]);
+
+  const fetchCommits = async () => {
+    try {
+      const response = await AxiosClient.get(`/github/${projectId}/commits`);
+      if (response.data.success) {
+        setCommits(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch commits");
+    }
+  };
 
   const handleLinkRepo = async () => {
     if (!repoUrl.includes("github.com")) {
@@ -58,13 +56,19 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
 
     setIsLinking(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setIsLinked(true);
-      onRepoLinked(repoUrl);
-      toast.success("GitHub repository linked successfully!");
-    } catch (error) {
-      toast.error("Failed to link repository");
+      const response = await AxiosClient.post("/github/link", {
+        projectId,
+        repoUrl,
+      });
+
+      if (response.data.success) {
+        setIsLinked(true);
+        onRepoLinked(repoUrl);
+        toast.success("GitHub repository linked successfully!");
+        await fetchCommits();
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to link repository");
     } finally {
       setIsLinking(false);
     }
@@ -72,41 +76,54 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await fetchCommits();
     setIsRefreshing(false);
     toast.success("Repository status updated");
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) return "Just now";
+    if (diffHours < 24) return `${diffHours} hours ago`;
+    if (diffDays === 1) return "Yesterday";
+    return `${diffDays} days ago`;
+  };
+
   return (
-    <div className="relative z-10">
+    <div className="">
       {!isLinked ? (
-        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-gray-900 text-white rounded-xl">
+            <div className="p-3 bg-gray-900 dark:bg-gray-700 text-white rounded-xl">
               <Github size={24} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900">Connect GitHub</h3>
-              <p className="text-sm text-gray-500">
-                Link your repository to track progress and enable AI reviews.
+              <h3 className="font-bold text-gray-900 dark:text-white">
+                Connect GitHub
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Link your repository to track progress
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="https://github.com/username/repo"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="https://github.com/username/repo"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              className="w-full h-12 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+            />
             <Button
               onClick={handleLinkRepo}
               disabled={isLinking || !repoUrl}
-              className="w-full h-12 bg-gray-900 hover:bg-black text-white font-bold rounded-xl gap-2"
+              className="w-full h-12 bg-gray-900 hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-bold rounded-xl gap-2"
             >
               {isLinking ? (
                 <>
@@ -120,48 +137,46 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
                 </>
               )}
             </Button>
-            <p className="text-[10px] text-center text-gray-400 font-medium uppercase tracking-widest">
-              Make sure your repository is public or you've granted access
-            </p>
           </div>
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Linked Repo Status */}
-          <div className="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-blue-100 dark:border-gray-800 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
                   <Github size={20} />
                 </div>
-                <div>
-                  <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                <div className="min-w-0">
+                  <div className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
                     Linked Repository
                   </div>
-                  <h4 className="font-bold text-gray-900 truncate max-w-[180px]">
+                  <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">
                     {repoUrl.replace("https://github.com/", "")}
                   </h4>
                 </div>
               </div>
-              <a
+              <Link
                 href={repoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
               >
                 <ExternalLink size={18} />
-              </a>
+              </Link>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 flex items-center gap-3">
                 <GitBranch size={16} className="text-gray-400" />
-                <div className="text-xs font-bold text-gray-700">main</div>
+                <div className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                  main
+                </div>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 flex items-center gap-3">
                 <CheckCircle2 size={16} className="text-green-500" />
-                <div className="text-xs font-bold text-gray-700">
-                  Up to date
+                <div className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                  {commits.length} commits
                 </div>
               </div>
             </div>
@@ -171,7 +186,7 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="w-full h-10 gap-2 border-gray-100 hover:bg-gray-50 text-gray-600"
+              className="w-full h-10 gap-2 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
             >
               <RefreshCw
                 size={14}
@@ -181,50 +196,50 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
             </Button>
           </div>
 
-          {/* Commit History */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest">
-                Recent Activity
-              </h4>
-              <Badge variant="outline" className="text-[10px]">
-                {commits.length} Commits
-              </Badge>
-            </div>
+          {commits.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                  Recent Activity
+                </h4>
+                <Badge variant="outline" className="text-[10px]">
+                  {commits.length} Commits
+                </Badge>
+              </div>
 
-            <div className="space-y-3">
-              {commits.map((commit, i) => (
-                <div
-                  key={commit.id}
-                  className="relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100 last:before:hidden"
-                >
-                  <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-white border-2 border-blue-500 z-10" />
-                  <div className="bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-colors cursor-pointer group">
-                    <p className="text-xs font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                      {commit.message}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-gray-400 font-medium">
-                        {commit.date}
-                      </span>
-                      <span className="text-[10px] text-gray-300">•</span>
-                      <span className="text-[10px] text-gray-400 font-medium">
-                        {commit.author}
-                      </span>
-                    </div>
+              <div className="space-y-3">
+                {commits.slice(0, 5).map((commit, i) => (
+                  <div
+                    key={commit.id}
+                    className="relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100 dark:before:bg-gray-800 last:before:hidden"
+                  >
+                    <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-white dark:bg-gray-900 border-2 border-blue-500 z-10" />
+                    <Link
+                      href={commit.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-gray-50 dark:bg-gray-800 rounded-xl p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                    >
+                      <p className="text-xs font-bold text-gray-800 dark:text-gray-200 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {commit.message}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                          {formatDate(commit.date)}
+                        </span>
+                        <span className="text-[10px] text-gray-300 dark:text-gray-600">
+                          •
+                        </span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                          {commit.author}
+                        </span>
+                      </div>
+                    </Link>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div className="bg-amber-50 rounded-xl p-4 flex items-start gap-3 border border-amber-100">
-            <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-amber-800 leading-relaxed">
-              AI analysis is enabled for this repository. New commits will be
-              automatically reviewed for best practices.
-            </p>
-          </div>
+          )}
         </div>
       )}
     </div>

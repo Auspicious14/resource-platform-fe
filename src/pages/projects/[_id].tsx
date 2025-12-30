@@ -19,22 +19,26 @@ export default function ProjectDetail({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { req, params } = context;
-  // const token = req.cookies?.token;
-  // if (!token) {
-  //   return {
-  //     redirect: {
-  //       destination: "/signin",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+  const token = req.cookies?.token;
 
-  const response = await AxiosClient.get(`/projects/${params?._id}`);
-  const data = response.data?.data;
+  const config = token
+    ? {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    : {};
 
-  if (!data) {
-    throw new Error("Project not found");
+  try {
+    const response = await AxiosClient.get(`/projects/${params?._id}`, config);
+    const data = response.data?.data;
+
+    if (!data) {
+      return { notFound: true };
+    }
+
+    return { props: { _id: params?._id, project: data } };
+  } catch (error) {
+    return { notFound: true };
   }
-
-  return { props: { _id: params?._id, project: data } };
 };
