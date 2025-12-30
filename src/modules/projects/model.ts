@@ -36,16 +36,27 @@ export interface IProjectMilestone {
   milestoneNumber: number;
   title: string;
   description: string;
-  hints: string[] | Record<string, string[]>;
+  hints: Record<"GUIDED" | "STANDARD" | "HARDCORE", string[]>;
   validationCriteria?: string;
 }
 
+export enum DifficultyMode {
+  GUIDED = "GUIDED",
+  STANDARD = "STANDARD",
+  HARDCORE = "HARDCORE",
+}
+
+export enum Status {
+  NOT_STARTED = "NOT_STARTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+}
 export interface IUserProject {
   id: string;
   userId: string;
   projectId: string;
-  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
-  difficultyModeChosen: "GUIDED" | "STANDARD" | "HARDCORE";
+  status: Status;
+  difficultyModeChosen: DifficultyMode;
   repoUrl?: string;
   startedAt: string;
   completedAt?: string;

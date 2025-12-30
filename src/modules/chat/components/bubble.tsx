@@ -26,7 +26,7 @@ export const MessageBubble = ({
   return (
     <div>
       <div
-        className={`flex w-full ${isUser ? " justify-end" : "justify-star"}`}
+        className={`flex w-full ${isUser ? " justify-end" : "justify-start"}`}
       >
         <div
           className={`  ${

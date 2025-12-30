@@ -6,6 +6,8 @@ import { Edit2, Trash2, Plus, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ProjectEditModal } from "./ProjectEditModal";
 import { IProject } from "@/modules/projects/model";
+import { ProjectForm } from "@/modules/projects/components/ProjectForm";
+import { Modal } from "@/components/Modal";
 
 export const ProjectList = () => {
   const { projects, getProjects, deleteProject } = useProjectState();
@@ -126,14 +128,21 @@ export const ProjectList = () => {
           </div>
         )}
       </div>
-      <ProjectEditModal
+      <Modal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
           setSelectedProject(null);
         }}
-        project={selectedProject}
-      />
+      >
+        <ProjectForm
+          initialData={selectedProject as IProject}
+          onSuccess={() => {
+            setIsEditModalOpen(false);
+            setSelectedProject(null);
+          }}
+        />
+      </Modal>
     </div>
   );
 };

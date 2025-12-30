@@ -1,22 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useChatState } from "./context";
 import { Button, TextInput } from "../../components";
-import { PaperAirplaneIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import {
+  PaperAirplaneIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import { IChat } from "./model";
+import { MessageBubble } from "./components/bubble";
 
 export const ChatPage: React.FC = () => {
-  const { loading, sendMessage, messages } = useChatState();
+  const { loading, responseLoading, sendMessage, messages, response } =
+    useChatState();
   const [newPrompt, setNewPrompt] = useState<string>("");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const latestChatId =
-    messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, response]);
 
   const handleSendMessage = async (question: string) => {
     if (question.trim() === "")
       return toast.error("Enter a message to proceed");
-    await sendMessage(question, latestChatId);
     setNewPrompt("");
+    await sendMessage(question);
   };
 
   return (
@@ -30,25 +38,25 @@ export const ChatPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((item) => (
-          <div
-            key={item._id}
-            className={`flex ${
-              item.role === "user" ? "justify-start" : "justify-end"
-            }`}
-          >
-            <div
-              className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm shadow-md ${
-                item.role === "user"
-                  ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-white"
-                  : "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-white"
-              }`}
-            >
-              {item.content}
-            </div>
-          </div>
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth"
+      >
+        {messages.map((item, index) => (
+          <MessageBubble
+            key={item._id || index}
+            role={item.role}
+            content={item.content}
+          />
         ))}
+
+        {response && (
+          <MessageBubble
+            isStreaming={responseLoading}
+            role="assistant"
+            content={response}
+          />
+        )}
       </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
@@ -65,8 +73,8 @@ export const ChatPage: React.FC = () => {
           />
           <Button
             onClick={() => handleSendMessage(newPrompt)}
-            disabled={loading}
-            isLoading={loading}
+            disabled={loading || responseLoading}
+            isLoading={loading || responseLoading}
             className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition"
           >
             <PaperAirplaneIcon className="w-5 h-5 rotate-90" />

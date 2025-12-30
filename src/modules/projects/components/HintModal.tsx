@@ -8,7 +8,7 @@ interface HintModalProps {
   isOpen: boolean;
   onClose: () => void;
   milestoneTitle: string;
-  hints: string[];
+  hints: Record<"GUIDED" | "STANDARD" | "HARDCORE", string[]>;
   difficultyMode: "GUIDED" | "STANDARD" | "HARDCORE";
   projectId: string;
   milestoneNumber: number;
@@ -25,17 +25,26 @@ export const HintModal: React.FC<HintModalProps> = ({
 }) => {
   const { requestAIHint, getOneProject } = useProjectState();
   const [unlockedCount, setUnlockedCount] = useState(0);
-  const [activeHints, setActiveHints] = useState<string[]>(hints);
+  const [activeHints, setActiveHints] = useState<string[]>(
+    hints[difficultyMode] || []
+  );
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    setActiveHints(hints);
-  }, [hints]);
+    setActiveHints(hints[difficultyMode] || []);
+  }, [hints, difficultyMode]);
 
   // Reset unlocked count and handle scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      // Auto-unlock first hint in GUIDED mode
+      if (
+        difficultyMode === "GUIDED" &&
+        (hints[difficultyMode]?.length || 0) > 0
+      ) {
+        setUnlockedCount(1);
+      }
     } else {
       document.body.style.overflow = "unset";
       setUnlockedCount(0);
@@ -174,7 +183,7 @@ export const HintModal: React.FC<HintModalProps> = ({
                                 isUnlocked ? "text-amber-600" : "text-gray-400"
                               }`}
                             >
-                              {index < hints.length
+                              {index < activeHints.length
                                 ? `Hint #${index + 1}`
                                 : "AI Generated Hint"}
                             </span>
@@ -236,7 +245,7 @@ export const HintModal: React.FC<HintModalProps> = ({
                 </div>
               )}
 
-              {!canUnlockMore && hints.length > 0 && (
+              {!canUnlockMore && activeHints.length > 0 && (
                 <div className="text-center py-4 text-gray-400 text-sm font-medium">
                   All hints for this milestone are unlocked.
                 </div>

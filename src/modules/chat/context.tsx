@@ -11,7 +11,7 @@ interface IChatState {
   messages: IChat[];
   setResponse: (responsne: string) => void;
   setMessages: React.Dispatch<React.SetStateAction<IChat[]>>;
-  getMessages: (projectId?: string) => Promise<void>;
+  getMessages: (projectId: string) => Promise<void>;
   sendMessage: (message: string, projectId?: string) => Promise<any>;
 }
 
@@ -35,11 +35,12 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
   const [responseLoading, setResponseLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
 
-  const getMessages = async (projectId?: string) => {
+  const getMessages = async (projectId: string) => {
     setLoading(true);
     try {
       const res = await AxiosClient.get(`/ai/chat/history/${projectId}`);
       const data = await res?.data?.data;
+      // console.log({ data });
       if (data) {
         setMessages(data);
       }
@@ -53,8 +54,20 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
 
   const sendMessage = async (message: string, projectId?: string) => {
     setResponseLoading(true);
+    setResponse(""); // Clear previous response
+
+    // Immediately add user message to the UI
+    const userMessage: IChat = {
+      role: "user",
+      content: message,
+      projectId: projectId,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
     const baseURL = process.env.NEXT_PUBLIC_API_URL;
     const token = getCookie("token") || localStorage.getItem("token");
+
     try {
       const res = await fetch(`${baseURL}/ai/chat`, {
         method: "POST",
@@ -64,23 +77,48 @@ export const ChatContextProvider: React.FC<IProps> = ({ children }) => {
         },
         body: JSON.stringify({ message, projectId }),
       });
-      // console.log(res.data, "responseee");
+
+      if (!res.ok) {
+        throw new Error("Failed to send message");
+      }
+
       const decoder = new TextDecoder();
-      const reader: any = res.body?.getReader();
+      const reader = res.body?.getReader();
+
+      if (!reader) {
+        throw new Error("No reader available");
+      }
+
       let done = false;
       let responseText = "";
 
       while (!done) {
-        const { value, done: doneReading } = await reader?.read();
+        const { value, done: doneReading } = await reader.read();
         done = doneReading;
+
         if (done) break;
+
         const chunkValue = decoder.decode(value, { stream: true });
         responseText += chunkValue;
         setResponse(responseText);
-        console.log(responseText, "message");
       }
+
+      // After streaming is complete, save assistant message to state and clear the streaming response
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: responseText,
+          projectId: projectId,
+          createdAt: new Date().toISOString(),
+        } as IChat,
+      ]);
+      setResponse("");
+
+      return responseText;
     } catch (error: any) {
-      toast.error(error);
+      console.error("Send message error:", error);
+      toast.error(error.message || "Failed to send message");
     } finally {
       setResponseLoading(false);
     }

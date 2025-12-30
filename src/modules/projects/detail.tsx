@@ -42,6 +42,10 @@ import {
 } from "./components/DifficultySelector";
 import { HintModal } from "./components/HintModal";
 import { GitHubIntegration } from "./components/GitHubIntegration";
+import { Modal } from "@/components/Modal";
+import { ProjectForm } from "./components/ProjectForm";
+import { useAuth } from "../auth/context";
+import { Edit } from "lucide-react";
 import { CodeEditor } from "./components/CodeEditor";
 
 export const ProjectDetailPage = ({
@@ -49,18 +53,23 @@ export const ProjectDetailPage = ({
 }: {
   project: IProject;
 }) => {
+  const { user } = useAuth();
   const [project, setProject] = useState<IProject>(initialProject);
   const [activeTab, setActiveTab] = useState<
     "overview" | "milestones" | "resources" | "solutions"
   >("overview");
-  const [difficultyMode, setDifficultyMode] =
-    useState<DifficultyMode>("STANDARD");
+  const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>(
+    project.userProgress?.difficultyModeChosen || "STANDARD"
+  );
   const [showChatModal, setShowChatModal] = useState(false);
   const [showHintModal, setShowHintModal] = useState(false);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedMilestoneForHint, setSelectedMilestoneForHint] =
     useState<IProjectMilestone | null>(null);
   const { startProject, completeMilestone, getOneProject } = useProjectState();
+
+  const isOwner = user?.id === project.createdById || user?.role === "ADMIN";
 
   const lastUpdated = new Date(project?.updatedAt).toLocaleDateString("en-US", {
     month: "short",
@@ -127,7 +136,7 @@ export const ProjectDetailPage = ({
     project.learningObjectives?.filter(
       (obj): obj is string => typeof obj === "string" && obj.trim().length > 0
     ) ?? [];
-
+  console.log({ project, selectedMilestoneForHint });
   return (
     <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 transition-colors duration-300">
       {/* Project Hero Header */}
@@ -199,7 +208,10 @@ export const ProjectDetailPage = ({
             <Card className="w-full lg:w-80 shadow-xl border-blue-100 dark:border-gray-800 ring-4 ring-blue-50/50 dark:ring-gray-800/50">
               <div className="aspect-video relative">
                 <img
-                  src={project.coverImage || `https://placehold.co/600x400/3b82f6/white?text=${project.title}`}
+                  src={
+                    project.coverImage ||
+                    `https://placehold.co/600x400/3b82f6/white?text=${project.title}`
+                  }
                   className="w-full h-full object-cover rounded-t-xl"
                   alt={project.title}
                 />
@@ -237,6 +249,17 @@ export const ProjectDetailPage = ({
                     ? "Resume Project"
                     : "Start Project"}
                 </Button>
+
+                {isOwner && (
+                  <Button
+                    variant="outline"
+                    className="w-full mt-3 h-11 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 font-bold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => setShowEditModal(true)}
+                  >
+                    <Edit size={18} />
+                    Edit Project
+                  </Button>
+                )}
                 <div className="mt-4 flex justify-center gap-4">
                   <button className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     <Share2 size={20} />
@@ -616,9 +639,8 @@ export const ProjectDetailPage = ({
             )}
           </div>
 
-          {/* AI Guide Sidebar */}
           <div className="w-full lg:w-80 space-y-6">
-            <Card className="bg-white border-blue-100 shadow-xl shadow-blue-500/5 overflow-hidden group">
+            <Card className="bg-white border-blue-100 shadow-xl shadow-blue-500/5 overflow-hidden group lg:sticky lg:top-8 z-10">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
@@ -644,7 +666,7 @@ export const ProjectDetailPage = ({
               </CardContent>
             </Card>
 
-            <Card className="sticky top-8 bg-gray-900 border-none overflow-hidden shadow-2xl">
+            <Card className="lg:sticky lg:top-[calc(8rem+24rem)] z-10 bg-gray-900 border-none overflow-hidden shadow-2xl">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
@@ -694,7 +716,7 @@ export const ProjectDetailPage = ({
               </CardContent>
             </Card>
 
-            <div className="mt-8">
+            <div className="lg:sticky lg:top-[calc(8rem+50rem)] z-10">
               <GitHubIntegration
                 projectId={project.id}
                 initialRepoUrl={project.starterRepoUrl}
@@ -715,17 +737,45 @@ export const ProjectDetailPage = ({
         />
       )}
 
-      {showHintModal && selectedMilestoneForHint && (
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Project"
+      >
+        <ProjectForm
+          initialData={project}
+          onSuccess={async () => {
+            setShowEditModal(false);
+            const updated = await getOneProject(project.id);
+            if (updated) setProject(updated);
+            toast.success("Project updated successfully");
+          }}
+        />
+      </Modal>
+
+      {selectedMilestoneForHint && (
         <HintModal
           isOpen={showHintModal}
-          onClose={() => setShowHintModal(false)}
+          onClose={() => {
+            setShowHintModal(false);
+            setSelectedMilestoneForHint(null);
+          }}
           milestoneTitle={selectedMilestoneForHint.title}
           hints={
             Array.isArray(selectedMilestoneForHint.hints)
-              ? selectedMilestoneForHint.hints
-              : (selectedMilestoneForHint.hints as Record<string, string[]>)?.[
-                  difficultyMode
-                ] || []
+              ? {
+                  GUIDED: selectedMilestoneForHint.hints,
+                  STANDARD: selectedMilestoneForHint.hints,
+                  HARDCORE: selectedMilestoneForHint.hints,
+                }
+              : (selectedMilestoneForHint.hints as Record<
+                  "GUIDED" | "STANDARD" | "HARDCORE",
+                  string[]
+                >) || {
+                  GUIDED: [],
+                  STANDARD: [],
+                  HARDCORE: [],
+                }
           }
           difficultyMode={difficultyMode}
           projectId={project.id}

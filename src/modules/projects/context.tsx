@@ -28,6 +28,12 @@ interface IProjectState {
     milestoneNumber: number,
     difficultyMode: string
   ) => Promise<string>;
+  submitCode: (payload: {
+    projectId?: string;
+    milestoneId?: string;
+    code: string;
+    language: string;
+  }) => Promise<any>;
   setProjects: (projects: IProject[]) => void;
   setFeaturedProjects: (projects: IProject[]) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -58,30 +64,23 @@ export const ProjectConextProvider = ({ children }: IProps) => {
   const createProject = async (values: any) => {
     setIsLoading(true);
     try {
-      let dataToSend = values;
-      const hasFile = values.coverImage instanceof File;
+      const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        const value = values[key];
+        if (value === null || value === undefined) return;
 
-      if (hasFile) {
-        const formData = new FormData();
-        Object.keys(values).forEach((key) => {
-          if (
-            key === "milestones" ||
-            key === "resourceLinks" ||
-            key === "learningObjectives" ||
-            key === "technologies" ||
-            key === "categories" ||
-            key === "difficultyModes"
-          ) {
-            formData.append(key, JSON.stringify(values[key]));
-          } else {
-            formData.append(key, values[key]);
-          }
-        });
-        dataToSend = formData;
-      }
+        if (
+          Array.isArray(value) ||
+          (typeof value === "object" && !(value instanceof File))
+        ) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
+      });
 
-      const response = await AxiosClient.post("/projects", dataToSend, {
-        headers: hasFile ? { "Content-Type": "multipart/form-data" } : {},
+      const response = await AxiosClient.post("/projects", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       const data = response.data?.data;
       if (data) {
@@ -102,30 +101,23 @@ export const ProjectConextProvider = ({ children }: IProps) => {
   const updateProject = async (id: string, values: any) => {
     setIsLoading(true);
     try {
-      let dataToSend = values;
-      const hasFile = values.coverImage instanceof File;
+      const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        const value = values[key];
+        if (value === null || value === undefined) return;
 
-      if (hasFile) {
-        const formData = new FormData();
-        Object.keys(values).forEach((key) => {
-          if (
-            key === "milestones" ||
-            key === "resourceLinks" ||
-            key === "learningObjectives" ||
-            key === "technologies" ||
-            key === "categories" ||
-            key === "difficultyModes"
-          ) {
-            formData.append(key, JSON.stringify(values[key]));
-          } else {
-            formData.append(key, values[key]);
-          }
-        });
-        dataToSend = formData;
-      }
+        if (
+          Array.isArray(value) ||
+          (typeof value === "object" && !(value instanceof File))
+        ) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
+      });
 
-      const response = await AxiosClient.put(`/projects/${id}`, dataToSend, {
-        headers: hasFile ? { "Content-Type": "multipart/form-data" } : {},
+      const response = await AxiosClient.put(`/projects/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       const data = response.data?.data;
       if (data) {
@@ -280,6 +272,28 @@ export const ProjectConextProvider = ({ children }: IProps) => {
       throw err;
     }
   };
+
+  const submitCode = async (payload: {
+    projectId?: string;
+    milestoneId?: string;
+    code: string;
+    language: string;
+  }) => {
+    setIsLoading(true);
+    try {
+      const response = await AxiosClient.post(
+        `/projects/${payload.projectId}/code/submit`,
+        payload
+      );
+      return response.data;
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to submit code");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -296,6 +310,7 @@ export const ProjectConextProvider = ({ children }: IProps) => {
         startProject,
         completeMilestone,
         requestAIHint,
+        submitCode,
         setProjects,
         setFeaturedProjects,
         getFeaturedProjects,

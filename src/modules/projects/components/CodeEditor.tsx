@@ -1,215 +1,368 @@
-import React, { useState, useEffect } from "react";
-import Editor from "@monaco-editor/react";
-import { Play, Save, ChevronRight, Layout, Settings, Download, RotateCcw, X, Maximize2, Minimize2 } from "lucide-react";
-import { Button } from "@/components/Buttons";
-import { motion, AnimatePresence } from "framer-motion";
-import toast from "react-hot-toast";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Play, Save, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { EditorState } from "@codemirror/state";
+import {
+  EditorView,
+  keymap,
+  drawSelection,
+  highlightActiveLine,
+  highlightSpecialChars,
+} from "@codemirror/view";
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { rust } from "@codemirror/lang-rust";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { oneDark } from "@codemirror/theme-one-dark";
+import {
+  bracketMatching,
+  foldGutter,
+  foldKeymap,
+  indentOnInput,
+  LanguageDescription,
+} from "@codemirror/language";
+import { searchKeymap } from "@codemirror/search";
+import {
+  autocompletion,
+  completionKeymap,
+  closeBrackets,
+  closeBracketsKeymap,
+} from "@codemirror/autocomplete";
+import { lintKeymap } from "@codemirror/lint";
+import { useProjectState } from "../context";
 
 interface CodeEditorProps {
   isOpen: boolean;
   onClose: () => void;
-  initialCode?: string;
-  language?: string;
   title: string;
-  onSave?: (code: string) => void;
+  language: string;
+  projectId?: string;
+  milestoneId?: string;
+  onSubmit?: (code: string) => Promise<void>;
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   isOpen,
   onClose,
-  initialCode = "// Start building your solution here...",
-  language = "javascript",
   title,
-  onSave,
+  language,
+  projectId,
+  milestoneId,
+  onSubmit,
 }) => {
-  const [code, setCode] = useState(initialCode);
-  const [theme, setTheme] = useState<"vs-dark" | "light">("vs-dark");
-  const [isRunning, setIsRunning] = useState(false);
-  const [output, setOutput] = useState<string[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const { submitCode, isLoading: isApiLoading } = useProjectState();
+  const [code, setCode] = useState("// Start coding here...\n");
+  const [review, setReview] = useState<any>(null);
+  const [showReview, setShowReview] = useState(false);
 
-  useEffect(() => {
-    setCode(initialCode);
-  }, [initialCode]);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<EditorView | null>(null);
 
-  if (!isOpen) return null;
-
-  const handleRun = async () => {
-    setIsRunning(true);
-    setOutput((prev) => [...prev, `> Running code at ${new Date().toLocaleTimeString()}...`]);
-    
-    // Simulate test execution
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    setIsRunning(false);
-    setOutput((prev) => [
-      ...prev,
-      "✓ Milestone requirements met",
-      "✓ Syntax validation passed",
-      "✓ All tests passed successfully!",
-    ]);
-    toast.success("Tests passed!");
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      if (onSave) onSave(code);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      toast.success("Draft saved successfully");
-    } finally {
-      setIsSaving(false);
+  const getLanguageExtension = (lang: string) => {
+    switch (lang.toLowerCase()) {
+      case "javascript":
+      case "js":
+      case "typescript":
+      case "ts":
+        return javascript();
+      case "python":
+      case "py":
+        return python();
+      case "html":
+        return html();
+      case "css":
+        return css();
+      case "rust":
+        return rust();
+      default:
+        return javascript();
     }
   };
 
-  const clearOutput = () => setOutput([]);
+  useEffect(() => {
+    if (!isOpen || !editorRef.current) return;
+
+    // Create the editor view if it doesn't exist
+    if (!viewRef.current) {
+      const state = EditorState.create({
+        doc: code,
+        extensions: [
+          highlightSpecialChars(),
+          history(),
+          drawSelection(),
+          highlightActiveLine(),
+          indentOnInput(),
+          bracketMatching(),
+          closeBrackets(),
+          autocompletion(),
+          foldGutter(),
+          oneDark,
+          getLanguageExtension(language),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              setCode(update.state.doc.toString());
+            }
+          }),
+          keymap.of([
+            ...closeBracketsKeymap,
+            ...defaultKeymap,
+            ...searchKeymap,
+            ...historyKeymap,
+            ...foldKeymap,
+            ...completionKeymap,
+            ...lintKeymap,
+          ]),
+          EditorView.theme({
+            "&": {
+              height: "100%",
+              backgroundColor: "#030712",
+            },
+            ".cm-scroller": {
+              overflow: "auto",
+              fontFamily: "JetBrains Mono, Fira Code, monospace",
+            },
+          }),
+        ],
+      });
+
+      const view = new EditorView({
+        state,
+        parent: editorRef.current,
+      });
+
+      viewRef.current = view;
+    }
+
+    return () => {
+      if (viewRef.current) {
+        viewRef.current.destroy();
+        viewRef.current = null;
+      }
+    };
+  }, [isOpen, language]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async () => {
+    setShowReview(false);
+
+    try {
+      const data = await submitCode({
+        projectId,
+        milestoneId,
+        code,
+        language,
+      });
+
+      if (data.success) {
+        setReview(data.data.review);
+        setShowReview(true);
+
+        if (data.data.review.meetsRequirements) {
+          if (onSubmit) await onSubmit(code);
+        }
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    }
+  };
 
   return (
-    <div className={`fixed inset-0 z-[110] flex flex-col bg-gray-950 ${isFullScreen ? "p-0" : "p-4 md:p-8"}`}>
-      {/* Backdrop for non-fullscreen */}
-      {!isFullScreen && (
-        <div 
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm -z-10" 
-          onClick={onClose}
-        />
-      )}
-
-      {/* Editor Container */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`flex flex-col w-full h-full bg-[#1e1e1e] ${isFullScreen ? "" : "rounded-3xl border border-gray-800"} overflow-hidden shadow-2xl`}
-      >
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#181818] border-b border-gray-800">
-          <div className="flex items-center gap-4">
-            <div className="p-2 bg-blue-600/20 text-blue-400 rounded-lg">
-              <Layout size={20} />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-white leading-tight">{title}</h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{language}</span>
-                <span className="text-[10px] text-gray-700">•</span>
-                <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Auto-save enabled</span>
-              </div>
-            </div>
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+      <div className="bg-gray-900 rounded-xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+          <div>
+            <h2 className="text-xl font-bold text-white">{title}</h2>
+            <p className="text-sm text-gray-400">Web-based Code Editor</p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setTheme(theme === "vs-dark" ? "light" : "vs-dark")}
-              className="bg-transparent border-gray-800 text-gray-400 hover:text-white hover:bg-gray-800 h-9 px-3"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSubmit}
+              disabled={isApiLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50"
             >
-              <Settings size={16} />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsFullScreen(!isFullScreen)}
-              className="bg-transparent border-gray-800 text-gray-400 hover:text-white hover:bg-gray-800 h-9 px-3"
-            >
-              {isFullScreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-            </Button>
-            <div className="w-px h-6 bg-gray-800 mx-2" />
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="bg-gray-800 hover:bg-gray-700 text-white font-bold h-9 px-4 rounded-lg gap-2"
-            >
-              {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-              Save
-            </Button>
-            <Button
-              onClick={handleRun}
-              disabled={isRunning}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-9 px-4 rounded-lg gap-2 shadow-lg shadow-blue-900/20"
-            >
-              {isRunning ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
-              Run Tests
-            </Button>
+              {isApiLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={18} />
+                  Submit Code
+                </>
+              )}
+            </button>
             <button
               onClick={onClose}
-              className="ml-4 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
+              className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white"
             >
               <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* Main Editor Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* File Explorer (Simplified) */}
-          <div className="hidden md:flex flex-col w-48 bg-[#181818] border-r border-gray-800 py-4">
-            <div className="px-4 mb-4">
-              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Explorer</span>
+          {/* Code Editor */}
+          <div className="flex-1 flex flex-col">
+            <div className="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700">
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                <span className="ml-4 font-mono">
+                  index.{language === "javascript" ? "js" : language}
+                </span>
+              </div>
             </div>
-            <div className="space-y-1">
-              {["index.js", "utils.js", "tests.spec.js"].map((file) => (
-                <button
-                  key={file}
-                  className={`w-full text-left px-6 py-2 text-xs font-medium transition-colors ${
-                    file === "index.js" ? "bg-blue-600/10 text-blue-400 border-r-2 border-blue-600" : "text-gray-500 hover:text-gray-300 hover:bg-gray-800/50"
-                  }`}
-                >
-                  {file}
-                </button>
-              ))}
-            </div>
+
+            <div
+              ref={editorRef}
+              className="flex-1 overflow-hidden bg-[#030712] border-t border-gray-800"
+            />
           </div>
 
-          {/* Editor and Output */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <div className="flex-1 relative">
-              <Editor
-                height="100%"
-                language={language}
-                theme={theme}
-                value={code}
-                onChange={(value) => setCode(value || "")}
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  padding: { top: 20 },
-                  fontFamily: "var(--font-inter)",
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                }}
-              />
-            </div>
+          {/* Review Panel */}
+          {showReview && review && (
+            <div className="w-96 bg-gray-800 border-l border-gray-700 p-6 overflow-y-auto">
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-white">
+                      Code Review
+                    </h3>
+                    {review.meetsRequirements ? (
+                      <CheckCircle className="text-green-500" size={24} />
+                    ) : (
+                      <AlertCircle className="text-yellow-500" size={24} />
+                    )}
+                  </div>
 
-            {/* Terminal Output */}
-            <div className="h-48 bg-[#0f0f0f] border-t border-gray-800 flex flex-col">
-              <div className="flex items-center justify-between px-6 py-2 bg-[#181818] border-b border-gray-800">
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Terminal Output</span>
-                <button 
-                  onClick={clearOutput}
-                  className="p-1 text-gray-500 hover:text-white transition-colors"
-                >
-                  <RotateCcw size={14} />
-                </button>
-              </div>
-              <div className="flex-1 p-4 font-mono text-xs overflow-y-auto space-y-1 custom-scrollbar">
-                {output.length > 0 ? (
-                  output.map((line, i) => (
-                    <div key={i} className={line.startsWith("✓") ? "text-green-500" : "text-gray-400"}>
-                      {line}
+                  {/* Score */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">
+                        Quality Score
+                      </span>
+                      <span className="text-2xl font-bold text-white">
+                        {review.score}%
+                      </span>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-gray-700 italic">No output. Click "Run Tests" to see results.</div>
+                    <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${
+                          review.score >= 80
+                            ? "bg-green-500"
+                            : review.score >= 60
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                        }`}
+                        style={{ width: `${review.score}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Requirements */}
+                  <div
+                    className={`p-4 rounded-lg mb-6 ${
+                      review.meetsRequirements
+                        ? "bg-green-500/10 border border-green-500/20"
+                        : "bg-yellow-500/10 border border-yellow-500/20"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm font-medium ${
+                        review.meetsRequirements
+                          ? "text-green-400"
+                          : "text-yellow-400"
+                      }`}
+                    >
+                      {review.meetsRequirements
+                        ? "✓ Meets milestone requirements"
+                        : "⚠ Needs improvements to meet requirements"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Strengths */}
+                {review.strengths && review.strengths.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-bold text-green-400 mb-3">
+                      ✓ Strengths
+                    </h4>
+                    <ul className="space-y-2">
+                      {review.strengths.map((strength: string, idx: number) => (
+                        <li
+                          key={idx}
+                          className="text-sm text-gray-300 flex items-start gap-2"
+                        >
+                          <span className="text-green-500 mt-1">•</span>
+                          <span>{strength}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Improvements */}
+                {review.improvements && review.improvements.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-bold text-yellow-400 mb-3">
+                      ⚡ Improvements
+                    </h4>
+                    <ul className="space-y-2">
+                      {review.improvements.map(
+                        (improvement: string, idx: number) => (
+                          <li
+                            key={idx}
+                            className="text-sm text-gray-300 flex items-start gap-2"
+                          >
+                            <span className="text-yellow-500 mt-1">•</span>
+                            <span>{improvement}</span>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Security Issues */}
+                {review.securityIssues && review.securityIssues.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-bold text-red-400 mb-3">
+                      🔒 Security Concerns
+                    </h4>
+                    <ul className="space-y-2">
+                      {review.securityIssues.map(
+                        (issue: string, idx: number) => (
+                          <li
+                            key={idx}
+                            className="text-sm text-gray-300 flex items-start gap-2"
+                          >
+                            <span className="text-red-500 mt-1">•</span>
+                            <span>{issue}</span>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {review.meetsRequirements && (
+                  <button
+                    onClick={onClose}
+                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+                  >
+                    Mark Milestone Complete
+                  </button>
                 )}
               </div>
             </div>
-          </div>
+          )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
-
-// Simple RefreshCw component for lucide
-import { RefreshCw } from "lucide-react";

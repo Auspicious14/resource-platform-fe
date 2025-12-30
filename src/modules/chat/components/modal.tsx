@@ -22,18 +22,12 @@ export const ChatModal = ({
     messages,
     getMessages,
     response,
-    setMessages,
-    setResponse,
   } = useChatState();
   const [newPrompt, setNewPrompt] = useState("");
-  const [userQuestion, setUserQuestion] = useState("");
-
-  const latestChatId =
-    messages.length > 0 ? messages[messages.length - 1].chatId : undefined;
 
   useEffect(() => {
-    getMessages();
-  }, []);
+    if (projectId) getMessages(projectId);
+  }, [projectId]);
 
   useEffect(() => {
     if (isOpen) {
@@ -48,18 +42,8 @@ export const ChatModal = ({
 
   const handleSendMessage = async (question: string) => {
     if (!question.trim()) return toast.error("Enter a message to proceed");
-    setUserQuestion(question);
-    setMessages(
-      (prev) =>
-        [
-          ...prev,
-          { role: "user", content: question, chatId: latestChatId },
-        ] as IChat[]
-    );
-    setResponse("");
-    setUserQuestion("");
-    await sendMessage(question, latestChatId);
     setNewPrompt("");
+    await sendMessage(question, projectId);
   };
 
   return (
@@ -99,17 +83,13 @@ export const ChatModal = ({
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-            {messages.map((item) => (
+            {messages.map((item, index) => (
               <MessageBubble
-                key={item._id}
+                key={item._id || index}
                 role={item.role}
                 content={item.content}
               />
             ))}
-
-            {userQuestion && (
-              <MessageBubble role="user" content={userQuestion} />
-            )}
 
             {response && (
               <MessageBubble

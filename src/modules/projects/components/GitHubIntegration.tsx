@@ -78,7 +78,7 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative z-10">
       {!isLinked ? (
         <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
           <div className="flex items-center gap-4 mb-6">
