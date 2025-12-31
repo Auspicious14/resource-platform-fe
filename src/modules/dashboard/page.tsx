@@ -336,7 +336,8 @@ export const DashboardPage = () => {
                           </div>
                         </div>
                         <Button
-                          className="mt-8 bg-white text-purple-600 hover:bg-purple-50 font-bold"
+                          // variant="primary"
+                          className="mt-8 bg-white  !text-purple-600 hover:bg-purple-50 font-bold"
                           onClick={() =>
                             router.push(`/projects/${featuredProject.id}`)
                           }
