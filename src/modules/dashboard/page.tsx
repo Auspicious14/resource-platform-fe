@@ -42,7 +42,10 @@ export const DashboardPage = () => {
   const calculateProgress = (project: any) => {
     const totalCount = project.project?.milestones?.length || 0;
     if (totalCount === 0) return 0;
-    const completedCount = project.completedMilestones?.length || 0;
+    const completedCount =
+      project.completedMilestones?.length ||
+      project.milestoneProgress?.length ||
+      0;
     return Math.round((completedCount / totalCount) * 100);
   };
 
@@ -256,8 +259,10 @@ export const DashboardPage = () => {
                                   </span>
                                   <span className="flex items-center gap-1">
                                     <Target size={12} />{" "}
-                                    {p.completedMilestones?.length || 0}/
-                                    {p.project?.milestones?.length || 0}{" "}
+                                    {p.completedMilestones?.length ||
+                                      p.milestoneProgress?.length ||
+                                      0}
+                                    /{p.project?.milestones?.length || 0}{" "}
                                     Milestones
                                   </span>
                                 </div>
