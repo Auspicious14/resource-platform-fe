@@ -43,7 +43,7 @@ export const AuthContextProvider = ({
 }) => {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUser = useCallback(async () => {

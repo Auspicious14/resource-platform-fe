@@ -36,7 +36,7 @@ export const DashboardProvider = ({
   const [inProgressProjects, setInProgressProjects] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [featuredProject, setFeaturedProject] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
     try {
