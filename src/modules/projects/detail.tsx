@@ -151,10 +151,6 @@ export const ProjectDetailPage = ({
     }
   };
 
-  const objectives =
-    project.learningObjectives?.filter(
-      (obj): obj is string => typeof obj === "string" && obj.trim().length > 0
-    ) ?? [];
   console.log({ project, selectedMilestoneForHint });
   return (
     <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 transition-colors duration-300">
@@ -209,7 +205,11 @@ export const ProjectDetailPage = ({
                 { id: "overview", label: "Overview", icon: FileText },
                 { id: "milestones", label: "Milestones", icon: Trophy },
                 { id: "resources", label: "Resources", icon: BookOpen },
-                { id: "solutions", label: "Community", icon: Users },
+                {
+                  id: "solutions",
+                  label: "Community (Coming Soon)",
+                  icon: Users,
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -624,17 +624,17 @@ export const ProjectDetailPage = ({
                   <Users size={48} />
                 </div>
                 <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
-                  Pioneer the Community
+                  Community Coming Soon
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-10 font-medium leading-relaxed">
-                  Be the first to submit a solution! You'll earn the{" "}
-                  <span className="text-blue-600 font-bold">
-                    "Early Explorer"
-                  </span>{" "}
-                  badge and 2x XP bonus.
+                  We are building a vibrant community space where you can share
+                  solutions, get feedback, and collaborate with other builders.
                 </p>
-                <Button className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-200 dark:shadow-none transition-all hover:-translate-y-1">
-                  Submit Your Build
+                <Button
+                  disabled
+                  className="h-14 px-10 rounded-2xl bg-gray-200 dark:bg-gray-800 text-gray-400 font-black text-lg cursor-not-allowed"
+                >
+                  Coming Soon
                 </Button>
               </motion.div>
             )}

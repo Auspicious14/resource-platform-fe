@@ -69,7 +69,7 @@ export const ProfilePage = ({ username }: { username?: string }) => {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-gray-50/30 pb-20 pt-8">
+    <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 pb-20 pt-8">
       <div className="max-w-7xl mx-auto px-4">
         {/* Profile Header */}
         <Card className="border-none shadow-sm mb-8 overflow-hidden">
@@ -95,16 +95,16 @@ export const ProfilePage = ({ username }: { username?: string }) => {
                   )}
                 </div>
                 <div className="pb-2">
-                  <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                     {profile.firstName} {profile.lastName}
                     <Badge variant="secondary" className="text-xs">
                       {profile.skillLevel}
                     </Badge>
                   </h1>
-                  <p className="text-gray-500 mt-1 max-w-lg">
+                  <p className="text-gray-500 dark:text-white mt-1 max-w-lg">
                     {profile.bio || "No bio yet."}
                   </p>
-                  <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500">
+                  <div className="flex flex-wrap gap-4 mt-4 text-sm dark:text-white text-gray-500">
                     <span className="flex items-center gap-1">
                       <MapPin size={14} /> Remote
                     </span>
@@ -165,7 +165,7 @@ export const ProfilePage = ({ username }: { username?: string }) => {
           <div className="space-y-6">
             <Card className="border-none shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400">
+                <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-white">
                   Stats Overview
                 </CardTitle>
               </CardHeader>
@@ -200,14 +200,14 @@ export const ProfilePage = ({ username }: { username?: string }) => {
 
             <Card className="border-none shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400">
+                <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-white">
                   Contact
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <a
                   href={`mailto:${profile.email}`}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 text-sm text-gray-600 dark:text-white hover:text-blue-600 transition-colors"
                 >
                   <Mail size={16} /> {profile.email}
                 </a>
@@ -227,9 +227,9 @@ export const ProfilePage = ({ username }: { username?: string }) => {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-6 ">
             {/* Tabs */}
-            <div className="flex gap-2 p-1 bg-gray-100/50 rounded-2xl w-fit flex-wrap">
+            <div className="flex gap-2 p-1 bg-gray-100/50 dark:bg-gray-950 rounded-2xl w-fit flex-wrap">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}

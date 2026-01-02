@@ -16,12 +16,19 @@ import { useRouter } from "next/navigation";
 import { useProjectState } from "@/modules/projects/context";
 
 export const GlobalSearch = () => {
-  const { projects } = useProjectState();
+  const { projects, getProjects } = useProjectState();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // Fetch projects if not already available
+  useEffect(() => {
+    if (isOpen && projects.length === 0) {
+      getProjects();
+    }
+  }, [isOpen, projects.length]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -55,7 +62,7 @@ export const GlobalSearch = () => {
     } else {
       setResults([]);
     }
-  }, [query]);
+  }, [query, projects]);
 
   const handleSelect = (projectId: string) => {
     router.push(`/projects/${projectId}`);

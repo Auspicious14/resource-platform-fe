@@ -33,7 +33,7 @@ export default function RootLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useAnalytics();
-  console.log({ user });
+
   useEffect(() => {
     const onboardingCompleted = localStorage.getItem("onboardingCompleted");
     if (!onboardingCompleted) {

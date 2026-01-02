@@ -67,6 +67,33 @@ export const ProjectsPage = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const filteredProjects = projects.filter((project) => {
+    const matchesTitle = project.title
+      .toLowerCase()
+      .includes(filters.title.toLowerCase());
+    const matchesDifficulty = filters.difficulty
+      ? project.difficultyLevel === filters.difficulty
+      : true;
+    const matchesCategory = filters.category
+      ? project.categories?.includes(filters.category)
+      : true;
+    return matchesTitle && matchesDifficulty && matchesCategory;
+  });
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    if (filters.sort === "newest") {
+      return (
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime()
+      );
+    }
+    if (filters.sort === "popular") {
+      return (b.submissionCount || 0) - (a.submissionCount || 0);
+    }
+    // Add other sort options if needed
+    return 0;
+  });
+
   useEffect(() => {
     if (router.isReady) {
       const query: any = {};
@@ -136,13 +163,15 @@ export const ProjectsPage = () => {
                 onClick={() => setIsFilterVisible(!isFilterVisible)}
                 className="h-12 px-6 rounded-2xl border-2 font-bold dark:border-gray-800"
               >
-                <Filter size={18} className="mr-2" />
-                Filters
-                {Object.values(filters).filter(Boolean).length > 1 && (
-                  <span className="ml-2 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">
-                    {Object.values(filters).filter(Boolean).length - 1}
-                  </span>
-                )}
+                <div className="flex gap-2 items-center">
+                  <Filter size={18} className="mr-2" />
+                  Filters
+                  {Object.values(filters).filter(Boolean).length > 1 && (
+                    <span className="ml-2 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">
+                      {Object.values(filters).filter(Boolean).length - 1}
+                    </span>
+                  )}
+                </div>
               </Button>
               {["ADMIN", "CONTRIBUTOR"].includes(user?.role) && (
                 <Link href="/projects/create">
@@ -284,7 +313,7 @@ export const ProjectsPage = () => {
 
           {/* Main Content - Project Grid */}
           <div className="flex-1">
-            {projects && projects.length > 0 ? (
+            {sortedProjects && sortedProjects.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
@@ -292,7 +321,7 @@ export const ProjectsPage = () => {
                     : "space-y-4"
                 }
               >
-                {projects.map((project, index) => (
+                {sortedProjects.map((project, index) => (
                   <motion.div
                     key={project.id || index}
                     initial={{ opacity: 0, y: 20 }}
@@ -309,7 +338,10 @@ export const ProjectsPage = () => {
                         <CardContent className="p-4 flex items-center gap-6">
                           <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                             <img
-                              src={project.coverImage || `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`}
+                              src={
+                                project.coverImage ||
+                                `https://placehold.co/100x100/3b82f6/white?text=${project.title[0]}`
+                              }
                               className="w-full h-full object-cover transition-transform group-hover:scale-110"
                               alt={project.title}
                             />

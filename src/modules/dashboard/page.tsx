@@ -69,14 +69,14 @@ export const DashboardPage = () => {
     .reverse();
 
   return (
-    <div className="min-h-screen bg-gray-50/30 pb-20 pt-8">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pb-20 pt-8">
       <div className="max-w-7xl mx-auto px-4">
         {/* Welcome Header */}
         <header className="mb-12">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Welcome back, {user?.firstName || "Developer"}! 👋
           </h1>
-          <p className="text-gray-500 mt-2 text-lg">
+          <p className="text-gray-500 dark:text-white mt-2 text-lg">
             {stats?.completedProjects > 0
               ? `You've completed ${stats.completedProjects} projects so far. Keep pushing your limits!`
               : "Ready to start your first project? Browse our collection and start building!"}
@@ -124,10 +124,10 @@ export const DashboardPage = () => {
                     <stat.icon size={24} />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-500">
+                    <div className="text-sm font-medium text-gray-500 dark:text-gray-200">
                       {stat.label}
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
                       {stat.value}
                     </div>
                   </div>
@@ -142,12 +142,12 @@ export const DashboardPage = () => {
           <div className="lg:col-span-2 space-y-8">
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <Layout className="text-blue-600" /> Projects in Progress
                 </h2>
                 <Button
                   variant="transparent"
-                  className="text-blue-600 font-bold"
+                  className="text-blue-600 font-bold dark:text-white"
                   onClick={() => router.push("/projects")}
                 >
                   <div className="flex gap-2 items-center">
@@ -195,13 +195,13 @@ export const DashboardPage = () => {
                             <div className="flex-1">
                               <div className="flex justify-between items-start mb-2">
                                 <div>
-                                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
                                     {p.project?.title}
                                   </h3>
                                   <div className="flex gap-2 mt-1 flex-wrap">
                                     <Badge
                                       variant="outline"
-                                      className="text-[10px] uppercase tracking-widest bg-blue-50/50 text-blue-600 border-blue-100"
+                                      className="text-[10px] uppercase tracking-widest bg-blue-50/50 dark:bg-white text-blue-600 border-blue-100"
                                     >
                                       {p.difficultyModeChosen}
                                     </Badge>
@@ -288,7 +288,7 @@ export const DashboardPage = () => {
                       <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
                         <Code2 size={32} />
                       </div>
-                      <p className="text-gray-500 font-medium">
+                      <p className="text-gray-500 dark:text-white font-medium">
                         No projects in progress. Start your first challenge
                         today!
                       </p>
@@ -304,7 +304,7 @@ export const DashboardPage = () => {
             {/* Featured Project */}
             {featuredProject && (
               <section>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <BrainCircuit className="text-purple-600" /> Recommended for
                   You
                 </h2>
@@ -342,7 +342,7 @@ export const DashboardPage = () => {
                         </div>
                         <Button
                           // variant="primary"
-                          className="mt-8 bg-white  !text-purple-600 hover:bg-purple-50 font-bold"
+                          className="mt-8 bg-white  !text-purple-600 dark:!text-white hover:bg-purple-50 font-bold"
                           onClick={() =>
                             router.push(`/projects/${featuredProject.id}`)
                           }
@@ -402,45 +402,21 @@ export const DashboardPage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
-                  <Trophy size={14} /> Recent Achievements
+                  <Trophy size={14} /> Achievements
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {user?.achievements?.length > 0 ? (
-                  user.achievements.slice(0, 3).map((ua: any, i: number) => (
-                    <div key={i} className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-xl">
-                        🏆
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-gray-900">
-                          {ua.achievement?.title}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {ua.achievement?.description}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-6">
-                    <div className="text-4xl mb-2">🔒</div>
-                    <div className="text-sm font-bold text-gray-900">
-                      No achievements yet
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Complete projects to earn badges!
-                    </div>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600">
+                    <Trophy size={32} />
                   </div>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-2"
-                  onClick={() => router.push(`/profile/${user?.id}`)}
-                >
-                  View All Achievements
-                </Button>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                    Coming Soon
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    The achievement system is being revamped. Stay tuned!
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
