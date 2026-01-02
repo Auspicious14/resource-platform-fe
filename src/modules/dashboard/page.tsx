@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../auth/context";
 import { useDashboard } from "./context";
 
-export const DashboardPage = () => {
+export const DashboardPage = ({ data }: { data?: any }) => {
   const { user } = useAuth();
   const router = useRouter();
   const {
@@ -34,9 +34,16 @@ export const DashboardPage = () => {
     activities,
     featuredProject,
     isLoading: loading,
+    setDashboardData,
   } = useDashboard();
 
-  if (loading)
+  React.useEffect(() => {
+    if (data) {
+      setDashboardData(data);
+    }
+  }, [data, setDashboardData]);
+
+  if (loading && !data)
     return <div className="p-12 text-center">Loading your progress...</div>;
 
   const calculateProgress = (project: any) => {

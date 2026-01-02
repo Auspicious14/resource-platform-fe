@@ -15,6 +15,7 @@ interface IDashboardState {
   featuredProject: any;
   isLoading: boolean;
   refreshDashboard: () => Promise<void>;
+  setDashboardData: (data: any) => void;
 }
 
 const DashboardContext = createContext<IDashboardState | undefined>(undefined);
@@ -29,14 +30,29 @@ export const useDashboard = () => {
 
 export const DashboardProvider = ({
   children,
+  initialData,
 }: {
   children: React.ReactNode;
+  initialData?: any;
 }) => {
-  const [stats, setStats] = useState<any>(null);
-  const [inProgressProjects, setInProgressProjects] = useState<any[]>([]);
-  const [activities, setActivities] = useState<any[]>([]);
-  const [featuredProject, setFeaturedProject] = useState<any>(null);
+  const [stats, setStats] = useState<any>(initialData?.stats || null);
+  const [inProgressProjects, setInProgressProjects] = useState<any[]>(
+    initialData?.inProgressProjects || []
+  );
+  const [activities, setActivities] = useState<any[]>(
+    initialData?.activities || []
+  );
+  const [featuredProject, setFeaturedProject] = useState<any>(
+    initialData?.featuredProject || null
+  );
   const [isLoading, setIsLoading] = useState(false);
+
+  const setDashboardData = useCallback((data: any) => {
+    if (data.stats) setStats(data.stats);
+    if (data.inProgressProjects) setInProgressProjects(data.inProgressProjects);
+    if (data.activities) setActivities(data.activities);
+    if (data.featuredProject) setFeaturedProject(data.featuredProject);
+  }, []);
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -87,6 +103,7 @@ export const DashboardProvider = ({
         featuredProject,
         isLoading,
         refreshDashboard: fetchDashboardData,
+        setDashboardData,
       }}
     >
       {children}

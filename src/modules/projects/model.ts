@@ -3,6 +3,7 @@ export interface IProject {
   title: string;
   description: string;
   difficultyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  isFeatured: boolean;
   technologies: string[];
   categories: string[];
   estimatedTime?: string;

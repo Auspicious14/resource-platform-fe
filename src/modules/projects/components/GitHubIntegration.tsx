@@ -113,7 +113,7 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
               <h3 className="font-bold text-gray-900 dark:text-white">
                 Connect GitHub
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-white">
                 Link your repository to track progress
               </p>
             </div>
@@ -138,10 +138,10 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
                   Linking...
                 </>
               ) : (
-                <>
+                <div className="flex gap-2 itemss-center">
                   <Github size={18} />
                   Link Repository
-                </>
+                </div>
               )}
             </Button>
           </div>
@@ -180,9 +180,9 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
                   main
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 flex items-center gap-3">
+              <div className="bg-gray-50 dark:bg-gray-800 dark:text-white rounded-xl p-3 flex items-center gap-3">
                 <CheckCircle2 size={16} className="text-green-500" />
-                <div className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                <div className="text-xs font-bold text-gray-700 dark:text-white">
                   {commits.length} commits
                 </div>
               </div>
@@ -193,13 +193,15 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="w-full h-10 gap-2 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
+              className="w-full h-10 gap-2 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-white"
             >
-              <RefreshCw
-                size={14}
-                className={isRefreshing ? "animate-spin" : ""}
-              />
-              Refresh Status
+              <div className="flex gap-2 items-center">
+                <RefreshCw
+                  size={14}
+                  className={isRefreshing ? "animate-spin" : ""}
+                />
+                Refresh Status
+              </div>
             </Button>
           </div>
 
@@ -209,7 +211,10 @@ export const GitHubIntegration: React.FC<GitHubIntegrationProps> = ({
                 <h4 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                   Recent Activity
                 </h4>
-                <Badge variant="outline" className="text-[10px]">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] dark:text-white"
+                >
                   {commits.length} Commits
                 </Badge>
               </div>
