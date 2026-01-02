@@ -47,8 +47,23 @@ export const AuthContextProvider = ({
   const [error, setError] = useState<string | null>(null);
 
   const fetchUser = useCallback(async () => {
+    // Check URL for token (from OAuth redirect)
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get("token");
+
+      if (urlToken) {
+        localStorage.setItem("token", urlToken);
+        setCookie("token", urlToken, 7);
+        // Clean up URL without refreshing
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    }
+
     const token =
       localStorage.getItem("token") || document.cookie.includes("token=");
+
     if (!token) {
       setIsLoading(false);
       return;
@@ -60,6 +75,9 @@ export const AuthContextProvider = ({
       }
     } catch (err) {
       console.error("Failed to fetch user", err);
+      // If token is invalid, clear it
+      localStorage.removeItem("token");
+      deleteCookie("token", 0);
     } finally {
       setIsLoading(false);
     }
